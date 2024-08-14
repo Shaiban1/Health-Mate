@@ -2,4 +2,26 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="opac_white">#FCE3FBFD</color>
+    <color name="dark_grey">#FC3C3C3C</color>
+    <color name="cursor_color">#2196F3</color> <!-- Red cursor color -->
+    <color name="logo_color">#005987</color>
+    <color name="tick_color">#147059</color>
+
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="background_color">#F5F5F5</color>
+    <color name="hint_color">#757575</color>
+    <color name="blue">#1E88E5</color>
+    <color name="green">#049400</color>
+    <color name="dark_green">#C4FFC2</color>
+    <color name="bottom_nav_item_color">#FFFFFF</color>
+    <color name="dark_button_background_color">#3F51B5</color>
+    <color name="color_bttom_nav">#FFFFFF</color>
+    <color name="alert_dialog0">#EFEFEF</color>
+
+
 </resources>
