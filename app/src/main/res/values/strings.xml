@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Health Mate</string>
     <string name="email_hint">Email</string>
-    <string name="contact_hint">mobile number</string>
     <string name="password_hint">Password</string>
     <string name="forgot_password_login">Forgot Password?</string>
-    <string name="sign_up">Register</string>
     <string name="sign_in_login_tv">Sign in</string>
     <string name="or_sign_in_with_tv">- Or sign in with -</string>
     <string name="signInBtn">signInBtn</string>
