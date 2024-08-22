@@ -17,7 +17,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -48,7 +47,5 @@ dependencies {
     implementation (libs.ccp)
     implementation (libs.lottie)
     implementation(platform(libs.firebase.bom))
-    implementation ("com.airbnb.android:lottie:6.0.0")
-
     implementation(libs.play.services.auth)
 }
