@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HealthMate"
         tools:targetApi="31">
-
+        <activity
+            android:name=".activities.RegistrationActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.LoginActivity"
             android:exported="false" />
