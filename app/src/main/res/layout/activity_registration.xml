@@ -1,10 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.RegistrationActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/main"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".activities.RegistrationActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+<!-- Container for Lottie Animation -->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimationView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scaleType="fitXY"
+        app:lottie_rawRes="@raw/lottieflow_login"
+        app:lottie_loop="true"
+        android:layout_marginBottom="6dp"
+        app:lottie_autoPlay="true"/>
+</LinearLayout>
+
+<!-- Container for Other UI Components -->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:layout_marginVertical="100dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Account"
+        android:fontFamily="@font/medium"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        android:layout_marginBottom="20dp"/>
+
+    <EditText
+        android:id="@+id/regemail"
+        style="@style/LoginTextInput"
+        android:hint="@string/email_hint"
+        android:textColor="@color/black"
+        android:layout_marginStart="20dp"
+        android:textCursorDrawable="@drawable/custom_cursor"
+        android:layout_marginEnd="20dp"
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/regmobile"
+        style="@style/LoginTextInput"
+        android:hint="@string/contact_hint"
+        android:textColor="@color/black"
+        android:layout_marginStart="20dp"
+        android:textCursorDrawable="@drawable/custom_cursor"
+        android:layout_marginEnd="20dp"
+        android:inputType="textPhonetic"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        style="@style/LoginTextInput"
+        android:hint="@string/password_hint"
+        android:textColor="@color/black"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:textCursorDrawable="@drawable/custom_cursor"
+        android:inputType="textPassword"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/forgotPasswordTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/forgot_password_login"
+        android:textColor="@color/blue"
+        android:layout_gravity="end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="16dp"
+        android:textSize="16sp"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <Button
+        android:id="@+id/button_Login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/rounded_button_with_shadow"
+        style="@style/LoginButton"
+        android:elevation="4dp"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="24dp"/>
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="I agree to all the Terms and Conditions"></CheckBox>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
+
+</LinearLayout>
