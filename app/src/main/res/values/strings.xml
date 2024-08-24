@@ -3,8 +3,9 @@
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="forgot_password_login">Forgot Password?</string>
-    <string name="contact_hint"> Enter mobile number</string>
+    <string name="confirm_password">Confirm Password</string>
     <string name="sign_in_login_tv">Sign in</string>
+    <string name="sign_up">Sign Up</string>
     <string name="or_sign_in_with_tv">- Or sign in with -</string>
     <string name="signInBtn">signInBtn</string>
     <string name="phone_login_h">phone_login_h</string>
