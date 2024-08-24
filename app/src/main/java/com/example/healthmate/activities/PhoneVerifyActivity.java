@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 public class PhoneVerifyActivity extends AppCompatActivity {
 
     private EditText phoneNumberEditText;
-    private Button sendOtpButton;
     private TextView blockTimeTextView;
     private FirebaseAuth pAuth;
 
@@ -54,7 +53,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
 
 
         phoneNumberEditText = findViewById(R.id.etPhoneNumber);
-        sendOtpButton = findViewById(R.id.btnSubmit);
+        Button sendOtpButton = findViewById(R.id.btnSubmit);
         blockTimeTextView = findViewById(R.id.blockTimeTextView);
         pAuth = FirebaseAuth.getInstance();
 
@@ -77,6 +76,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
         // Prepend country code
         String completePhoneNumber = "+91" + phoneNumber;
 
+
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 completePhoneNumber,
                 60,
@@ -89,10 +89,10 @@ public class PhoneVerifyActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onVerificationFailed(FirebaseException e) {
-                        // Handle verification failure
+                    public void onVerificationFailed(@NonNull FirebaseException e) {
                         if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                            // Invalid request
+                            startActivity(new Intent(PhoneVerifyActivity.this,LoginActivity.class));
+                            finish();
                         } else if (e instanceof FirebaseTooManyRequestsException) {
                             // Too many requests
                             startBlockTimer();
@@ -100,7 +100,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken token) {
+                    public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
                         showOtpBottomSheet(verificationId);
                     }
                 }
@@ -112,7 +112,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
         updateBlockTime();
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint({"DefaultLocale", "SetTextI18n"})
     private void updateBlockTime() {
         long remainingTime = blockEndTime - System.currentTimeMillis();
         if (remainingTime > 0) {
@@ -125,6 +125,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void checkBlockStatus() {
         // This method should be called to check if the block timer is running
         // and if yes, update the blockTimeTextView accordingly
@@ -138,7 +139,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
 
     private void showOtpBottomSheet(String verificationId) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-        View bottomSheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_otp, null);
+        @SuppressLint("InflateParams") View bottomSheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_otp, null);
         bottomSheetDialog.setContentView(bottomSheetView);
 
         EditText otpBox1 = bottomSheetView.findViewById(R.id.otpBox1);

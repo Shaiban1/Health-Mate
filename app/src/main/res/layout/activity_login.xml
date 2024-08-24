@@ -10,7 +10,7 @@
     android:fitsSystemWindows="true"
     tools:context="activities.LoginActivity">
 
-    <!-- Container for Lottie Animation -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -20,16 +20,14 @@
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottieAnimationView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:scaleType="fitXY"
             app:lottie_rawRes="@raw/lottieflow_login"
             app:lottie_loop="true"
-            android:layout_marginBottom="6dp"
             app:lottie_autoPlay="true"/>
     </LinearLayout>
 
-    <!-- Container for Other UI Components -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,7 +38,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Login to your Account"
+            android:text="@string/login_to_your_account_textView"
             android:fontFamily="@font/medium"
             android:textColor="@android:color/black"
             android:textSize="24sp"
@@ -49,43 +47,54 @@
         <EditText
             android:id="@+id/emailEditText"
             style="@style/LoginTextInput"
+            android:layout_height="wrap_content"
+            android:layout_width="350dp"
+            android:autofillHints="emailAddress"
             android:hint="@string/email_hint"
-            android:layout_marginStart="20dp"
+            android:elevation="10dp"
+            android:layout_gravity="center"
             android:textCursorDrawable="@drawable/custom_cursor"
-            android:layout_marginEnd="20dp"
             android:inputType="textEmailAddress"
             android:layout_marginBottom="16dp"/>
 
         <EditText
             android:id="@+id/passwordEditText"
             style="@style/LoginTextInput"
+            android:layout_height="wrap_content"
+            android:layout_width="350dp"
+            android:autofillHints="password"
             android:hint="@string/password_hint"
+            android:layout_gravity="center"
+            android:textColorHint="@color/light_grey"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:textCursorDrawable="@drawable/custom_cursor"
             android:inputType="textPassword"
+            android:elevation="10dp"
             android:layout_marginBottom="8dp"/>
 
         <TextView
             android:id="@+id/forgotPasswordTextView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/forgot_password_login"
-            android:textColor="@color/blue"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="16dp"
-            android:textSize="16sp"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="@string/forgot_password_login"
+            android:textColor="@color/logo_color"
+            android:textSize="16sp"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <Button
             android:id="@+id/button_Login"
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:text="@string/sign_in_login_tv"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+
+            android:layout_gravity="center"
             android:background="@drawable/rounded_button_with_shadow"
             style="@style/LoginButton"
             android:elevation="4dp"
@@ -97,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/or_sign_in_with_tv"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/light_grey"
             android:layout_marginBottom="16dp"/>
 
         <LinearLayout
@@ -139,6 +148,7 @@
             android:layout_width="wrap_content"
             android:text="@string/don_t_have_an_account_sign_up_tv"
             android:layout_marginTop="24dp"
-            android:textColor="@color/blue"/>
+            android:fontFamily="@font/robot_black"
+            android:textColor="@color/logo_color"/>
     </LinearLayout>
 </LinearLayout>

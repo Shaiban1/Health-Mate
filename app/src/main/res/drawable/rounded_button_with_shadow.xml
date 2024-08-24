@@ -10,7 +10,7 @@
     <!-- Button background -->
     <item>
         <shape >
-            <solid android:color="@color/colorPrimary"/> <!-- Primary color for the button -->
+            <solid android:color="@color/logo_color"/> <!-- Primary color for the button -->
             <corners android:radius="8dp"/>
         </shape>
     </item>

@@ -1,6 +1,7 @@
 package com.example.healthmate.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,7 +27,7 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity {
 
     CircularImageView circularImageView;
-    TextView user_name_txtvw;
+    TextView user_name_txtVw;
     TextView time_of_day_textview;
     private final Handler handler = new Handler();
     LottieAnimationView lottieAnimationView;
@@ -49,10 +50,17 @@ public class MainActivity extends AppCompatActivity {
 
 
         circularImageView = findViewById(R.id.profile_image);
-        user_name_txtvw = findViewById(R.id.username_main);
+        user_name_txtVw = findViewById(R.id.username_main);
         time_of_day_textview = findViewById(R.id.time_of_day);
         logout_button = findViewById(R.id.logout_button);
         lottieAnimationView = findViewById(R.id.lottie_day_animation);
+
+
+
+
+
+
+
 
 
         FirebaseUser user = mAuth.getCurrentUser();
@@ -83,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             String userName = user.getDisplayName();
             if(userName != null ) {
                 String greeting = "Hey, " + userName;
-                user_name_txtvw.setText(greeting);
+                user_name_txtVw.setText(greeting);
             }
         }
     }
@@ -153,6 +161,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void redirectToLogin() {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("isLoggedIn", false);
+        editor.apply();
+
+
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();

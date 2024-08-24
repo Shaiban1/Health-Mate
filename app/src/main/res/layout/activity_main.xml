@@ -12,6 +12,8 @@
         android:layout_width="60dp"
         android:elevation="3dp"
         app:civ_border="false"
+        app:civ_circle_color_start="@color/blue"
+        app:civ_circle_color_end="@color/green"
         android:layout_height="60dp"
         android:src="@drawable/user"
         android:layout_marginTop="20sp"
@@ -41,7 +43,7 @@
             android:layout_height="wrap_content"
             android:text="@string/Day_Time"
             android:textSize="24sp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/dark_grey"
             android:layout_below="@id/username_main"
             android:layout_marginTop="7dp" />
 
@@ -63,6 +65,96 @@
     </RelativeLayout>
 
 
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="2"
+        android:layout_marginTop="100dp"
+        android:padding="16dp">
+
+        <!-- Morning Grid -->
+        <FrameLayout
+            android:id="@+id/morning_grid"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:background="@drawable/grid_background"
+            android:foreground="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/black"
+                android:text="@string/morning_reminder"
+                android:textSize="18sp"/>
+        </FrameLayout>
+
+        <!-- Afternoon Grid -->
+        <FrameLayout
+            android:id="@+id/afternoon_grid"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:background="@drawable/grid_background"
+            android:foreground="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/black"
+                android:text="@string/afternoon_reminder"
+                android:textSize="18sp"/>
+        </FrameLayout>
+
+        <!-- Evening Grid -->
+        <FrameLayout
+            android:id="@+id/evening_grid"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:background="@drawable/grid_background"
+            android:foreground="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/black"
+                android:text="@string/evening_reminder"
+                android:textSize="18sp"/>
+        </FrameLayout>
+
+        <!-- Night Grid -->
+        <FrameLayout
+            android:id="@+id/night_grid"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            android:background="@drawable/grid_background"
+            android:foreground="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/black"
+                android:text="@string/night_reminder"
+                android:textSize="18sp"/>
+        </FrameLayout>
+    </GridLayout>
+
+
+
     <Button
         android:id="@+id/logout_button"
         android:layout_width="wrap_content"
@@ -70,8 +162,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:text="Logout"
+        android:text="@string/logout_button_main"
         android:textColor="@android:color/white"
-        android:background="@color/colorAccent" />
+        android:background="@color/logo_color" />
 
 </RelativeLayout>
