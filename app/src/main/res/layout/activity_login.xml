@@ -44,41 +44,85 @@
             android:textSize="24sp"
             android:layout_marginBottom="20dp"/>
 
-        <EditText
-            android:id="@+id/emailEditText"
-            style="@style/LoginTextInput"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/textInputLayoutPhoneNumber"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="350dp"
-            android:autofillHints="emailAddress"
-            android:hint="@string/email_hint"
-            android:elevation="10dp"
-            android:layout_gravity="center"
-            android:textCursorDrawable="@drawable/custom_cursor"
-            android:inputType="textEmailAddress"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="32dp"
+            android:hint="@string/email_text_hint"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/logo_color"
+            app:boxStrokeWidth="2dp"
+            app:boxCornerRadiusTopStart= "4dp"
+            app:boxCornerRadiusTopEnd="4dp"
+            app:boxCornerRadiusBottomStart="4dp"
+            app:boxCornerRadiusBottomEnd="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvDescription">
 
-        <EditText
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailEditText"
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:backgroundTint="@color/white"
+                android:layout_gravity="center"
+                android:fontFamily="@font/rb_regular"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/pitch_dark_grey"
+                android:layout_margin="10dp"
+                android:padding="14dp"
+                android:textSize="16sp" />
+
+
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/textInputLayoutPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="32dp"
+            android:hint="Password"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/colorPrimary"
+            app:boxStrokeWidth="2dp"
+            app:endIconMode="password_toggle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/emailEditText">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/passwordEditText"
-            style="@style/LoginTextInput"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
-            android:layout_width="350dp"
-            android:autofillHints="password"
-            android:hint="@string/password_hint"
             android:layout_gravity="center"
-            android:textColorHint="@color/light_grey"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:textCursorDrawable="@drawable/custom_cursor"
+            android:backgroundTint="@color/white"
+            android:fontFamily="@font/rb_regular"
             android:inputType="textPassword"
-            android:elevation="10dp"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="@color/pitch_dark_grey"
+            android:layout_margin="10dp"
+            android:padding="14dp"
+            android:textSize="16sp" />
 
-        <TextView
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
             android:id="@+id/forgotPasswordTextView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="40dp"
             android:layout_marginBottom="16dp"
             android:clickable="true"
             android:focusable="true"
@@ -93,7 +137,6 @@
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:text="@string/sign_in_login_tv"
-
             android:layout_gravity="center"
             android:background="@drawable/rounded_button_with_shadow"
             style="@style/LoginButton"

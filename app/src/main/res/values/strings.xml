@@ -19,6 +19,12 @@
     <string name="evening_reminder">Evening</string>
     <string name="night_reminder">Night</string>
     <string name="logout_button_main">Logout</string>
+    <string name="string_block_time">You can try again in: 00:00</string>
+    <string name="submit_btn_phone">Get OTP</string>
+    <string name="phone_number_hint">Phone Number</string>
+    <string name="email_text_hint">Email address</string>
+    <string name="verify_your_phone_number_tv">Verify Your Phone Number</string>
+    <string name="phone_verify_desc">Please enter your phone number to receive \na verification code.</string>
 
 
     <string-array name="duration_options">

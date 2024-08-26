@@ -21,7 +21,7 @@
         android:layout_below="@id/lottieAnimationView3"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp"
-        android:text="Welcome to HealthService"
+        android:text="Log meals and track your diet effortlessly."
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:textSize="18sp" />

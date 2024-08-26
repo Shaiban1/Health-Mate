@@ -32,6 +32,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.healthmate.R;
+import com.example.healthmate.models.UserProfile;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -43,6 +44,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 
 /** @noinspection ALL*/
 public class LoginActivity extends AppCompatActivity {
@@ -56,6 +60,9 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient googleSignInClient;
     GoogleSignInOptions googleSignInOptions;
     LottieAnimationView lottieAnimationView;
+
+    FirebaseDatabase database;
+    DatabaseReference userRef;
 
 
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -104,6 +111,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
         mAuth = FirebaseAuth.getInstance();
+
+        database = FirebaseDatabase.getInstance();
+        userRef = database.getReference("users");
 
         Button sign_in_Btn = findViewById(R.id.button_Login);
         email_login = findViewById(R.id.emailEditText);
@@ -221,6 +231,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
                             current_user = mAuth.getCurrentUser();
+
                             SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putBoolean("isLoggedIn", true);
@@ -306,6 +317,16 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+
+    private void saveUserProfileToDatabase(FirebaseUser user) {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        String username = account != null ? account.getDisplayName() : "";
+        String phoneNumber = "";
+
+        UserProfile userProfile = new UserProfile(username,user.getEmail(),phoneNumber);
+        userRef.child(user.getUid()).setValue(userProfile);
     }
 
 

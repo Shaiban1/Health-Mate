@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -13,11 +14,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.example.healthmate.R;
+import com.example.healthmate.fragment.AfternoonFragment;
+import com.example.healthmate.fragment.EveningFragment;
+import com.example.healthmate.fragment.MorningFragment;
+import com.example.healthmate.fragment.NightFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -55,7 +61,10 @@ public class MainActivity extends AppCompatActivity {
         logout_button = findViewById(R.id.logout_button);
         lottieAnimationView = findViewById(R.id.lottie_day_animation);
 
-
+        findViewById(R.id.morning_grid).setOnClickListener(v -> loadFragment(new MorningFragment()));
+        findViewById(R.id.afternoon_grid).setOnClickListener(v -> loadFragment(new AfternoonFragment()));
+        findViewById(R.id.evening_grid).setOnClickListener(v -> loadFragment(new EveningFragment()));
+        findViewById(R.id.night_grid).setOnClickListener(v -> loadFragment(new NightFragment()));
 
 
 
@@ -78,6 +87,32 @@ public class MainActivity extends AppCompatActivity {
         updateTimeAndAnimation();
         startDayNightCycleUpdate();
     }
+
+    private void loadFragment(Fragment fragment) {
+        // Hide profile image and logout button when a fragment is loaded
+        findViewById(R.id.profile_image).setVisibility(View.GONE);
+        findViewById(R.id.logout_button).setVisibility(View.GONE);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            // Show the profile image and logout button when no fragment is displayed
+            findViewById(R.id.profile_image).setVisibility(View.VISIBLE);
+            findViewById(R.id.logout_button).setVisibility(View.VISIBLE);
+
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 
     private void updateUI(FirebaseUser user) {
         if(user != null) {

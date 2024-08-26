@@ -48,6 +48,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="30dp"
+            style="@style/LoginButton"
             android:background="@drawable/rounded_button_with_shadow"
             android:backgroundTint="@color/logo_color"
             android:text="Next"

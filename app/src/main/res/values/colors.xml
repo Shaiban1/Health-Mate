@@ -10,10 +10,13 @@
     <color name="cursor_color">#2196F3</color> <!-- Red cursor color -->
     <color name="logo_color">#005987</color>
     <color name="tick_color">#147059</color>
+    <color name="red_color">#F60000</color>
+    <color name="light_red_color">#FD4423</color>
 
 
-    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimary">#005987</color>
     <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorSecondary">#FFFFFF</color>
     <color name="colorAccent">#FF4081</color>
     <color name="background_color">#F5F5F5</color>
     <color name="hint_color">#757575</color>
