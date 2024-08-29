@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,26 +20,41 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.healthmate.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class PhoneVerifyActivity extends AppCompatActivity {
 
-    private EditText phoneNumberEditText;
-    private Button sendOtpButton;
+    private TextInputEditText phoneNumberEditText;
     private TextView blockTimeTextView;
     private FirebaseAuth pAuth;
-
+    private LottieAnimationView lottieAnimationView;
+    FrameLayout loadingOverlay;
     private static final long BLOCK_DURATION_MS = 5 * 60 * 1000; // Example: 5 minutes block duration
     private long blockEndTime = 0;
+    private String phoneNumber;
+    private EditText otpBox1, otpBox2, otpBox3, otpBox4, otpBox5, otpBox6;
+    private BottomSheetDialog bottomSheetDialog;
+    private String verificationId;
+    private String autoFilledOtp;
+
+
 
 
     @Override
@@ -54,17 +70,20 @@ public class PhoneVerifyActivity extends AppCompatActivity {
 
 
         phoneNumberEditText = findViewById(R.id.etPhoneNumber);
-        sendOtpButton = findViewById(R.id.btnSubmit);
+        Button sendOtpButton = findViewById(R.id.btnSubmit);
         blockTimeTextView = findViewById(R.id.blockTimeTextView);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
+        lottieAnimationView = findViewById(R.id.lottieAnimationView_phone_wait);
         pAuth = FirebaseAuth.getInstance();
 
 
         sendOtpButton.setOnClickListener(v -> {
-            String phoneNumber = phoneNumberEditText.getText().toString();
-            if (!phoneNumber.isEmpty()) {
+            String phoneNumber = phoneNumberEditText.getText() != null ? phoneNumberEditText.getText().toString().trim() : "";
+
+
+            if (validatePhoneNumber(phoneNumber)) {
+                showLoadingAnimation(); // Start Lottie animation
                 sendVerificationCode(phoneNumber);
-            } else {
-                Toast.makeText(PhoneVerifyActivity.this, "Enter phone number", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -73,9 +92,44 @@ public class PhoneVerifyActivity extends AppCompatActivity {
 
     }
 
+    private boolean validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber.isEmpty()) {
+            setPhoneNumberError("Phone number cannot be empty");
+            return false;
+        } else if (!phoneNumber.matches("\\d{10}")) {
+            setPhoneNumberError("Enter a valid 10-digit phone number");
+            return false;
+        } else {
+            clearPhoneNumberError();
+            return true;
+        }
+    }
+
+    private void showLoadingAnimation() {
+        loadingOverlay.setVisibility(View.VISIBLE);
+        lottieAnimationView.playAnimation();
+    }
+
+    private void hideLoadingAnimation() {
+        lottieAnimationView.cancelAnimation();
+        loadingOverlay.setVisibility(View.GONE);
+    }
+
+    private void setPhoneNumberError(String error) {
+        TextInputLayout phoneNumberLayout = findViewById(R.id.textInputLayoutPhoneNumber);
+        phoneNumberLayout.setError(error);
+    }
+
+    private void clearPhoneNumberError() {
+        TextInputLayout phoneNumberLayout = findViewById(R.id.textInputLayoutPhoneNumber);
+        phoneNumberLayout.setError(null);
+    }
+
     private void sendVerificationCode(String phoneNumber) {
         // Prepend country code
         String completePhoneNumber = "+91" + phoneNumber;
+
+
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 completePhoneNumber,
@@ -86,22 +140,42 @@ public class PhoneVerifyActivity extends AppCompatActivity {
                     @Override
                     public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
                         // Auto verification code is received
-                    }
+                        hideLoadingAnimation();
 
-                    @Override
-                    public void onVerificationFailed(FirebaseException e) {
-                        // Handle verification failure
-                        if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                            // Invalid request
-                        } else if (e instanceof FirebaseTooManyRequestsException) {
-                            // Too many requests
-                            startBlockTimer();
+                        autoFilledOtp = credential.getSmsCode(); // Store the received OTP
+
+                        if (autoFilledOtp != null) {
+                            // Auto-fill the OTP in the OTP fields
+                            otpBox1.setText(String.valueOf(autoFilledOtp.charAt(0)));
+                            otpBox2.setText(String.valueOf(autoFilledOtp.charAt(1)));
+                            otpBox3.setText(String.valueOf(autoFilledOtp.charAt(2)));
+                            otpBox4.setText(String.valueOf(autoFilledOtp.charAt(3)));
+                            otpBox5.setText(String.valueOf(autoFilledOtp.charAt(4)));
+                            otpBox6.setText(String.valueOf(autoFilledOtp.charAt(5)));
+                            verifyCode(verificationId, autoFilledOtp);
                         }
                     }
 
                     @Override
-                    public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken token) {
+                    public void onVerificationFailed(@NonNull FirebaseException e) {
+                        hideLoadingAnimation();
+                        if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                            setPhoneNumberError("Invalid phone number. Please try again.");
+                        } else if (e instanceof FirebaseTooManyRequestsException) {
+                            startBlockTimer();
+                            Toast.makeText(PhoneVerifyActivity.this, "Too many requests. Try again later.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(PhoneVerifyActivity.this, "Verification failed. Please try again.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
+                        hideLoadingAnimation();  // Ensure this method is called to hide the entire overlay
+                        PhoneVerifyActivity.this.verificationId = verificationId; // Store verificationId in member variable
                         showOtpBottomSheet(verificationId);
+
+
                     }
                 }
         );
@@ -112,7 +186,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
         updateBlockTime();
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint({"DefaultLocale", "SetTextI18n"})
     private void updateBlockTime() {
         long remainingTime = blockEndTime - System.currentTimeMillis();
         if (remainingTime > 0) {
@@ -125,6 +199,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void checkBlockStatus() {
         // This method should be called to check if the block timer is running
         // and if yes, update the blockTimeTextView accordingly
@@ -137,16 +212,17 @@ public class PhoneVerifyActivity extends AppCompatActivity {
     }
 
     private void showOtpBottomSheet(String verificationId) {
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-        View bottomSheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_otp, null);
+        bottomSheetDialog = new BottomSheetDialog(this);
+        @SuppressLint("InflateParams") View bottomSheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_otp, null);
         bottomSheetDialog.setContentView(bottomSheetView);
 
-        EditText otpBox1 = bottomSheetView.findViewById(R.id.otpBox1);
-        EditText otpBox2 = bottomSheetView.findViewById(R.id.otpBox2);
-        EditText otpBox3 = bottomSheetView.findViewById(R.id.otpBox3);
-        EditText otpBox4 = bottomSheetView.findViewById(R.id.otpBox4);
-        EditText otpBox5 = bottomSheetView.findViewById(R.id.otpBox5);
-        EditText otpBox6 = bottomSheetView.findViewById(R.id.otpBox6);
+        otpBox1 = bottomSheetView.findViewById(R.id.otpBox1);
+        otpBox2 = bottomSheetView.findViewById(R.id.otpBox2);
+        otpBox3 = bottomSheetView.findViewById(R.id.otpBox3);
+        otpBox4 = bottomSheetView.findViewById(R.id.otpBox4);
+        otpBox5 = bottomSheetView.findViewById(R.id.otpBox5);
+        otpBox6 = bottomSheetView.findViewById(R.id.otpBox6);
+
         Button verifyOtpButton = bottomSheetView.findViewById(R.id.verifyOtpButton);
 
         setOtpBoxListeners(otpBox1, otpBox2);
@@ -154,6 +230,9 @@ public class PhoneVerifyActivity extends AppCompatActivity {
         setOtpBoxListeners(otpBox3, otpBox4);
         setOtpBoxListeners(otpBox4, otpBox5);
         setOtpBoxListeners(otpBox5, otpBox6);
+
+
+
 
         verifyOtpButton.setOnClickListener(v -> {
             String otp = otpBox1.getText().toString() + otpBox2.getText().toString() +
@@ -193,6 +272,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
         pAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+
                         Intent intent = new Intent(PhoneVerifyActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -202,4 +282,6 @@ public class PhoneVerifyActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 }

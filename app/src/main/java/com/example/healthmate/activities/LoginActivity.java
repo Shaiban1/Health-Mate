@@ -3,8 +3,13 @@ package com.example.healthmate.activities;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +23,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -26,6 +32,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.healthmate.R;
+import com.example.healthmate.models.UserProfile;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -37,6 +44,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 
 /** @noinspection ALL*/
 public class LoginActivity extends AppCompatActivity {
@@ -50,6 +60,9 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient googleSignInClient;
     GoogleSignInOptions googleSignInOptions;
     LottieAnimationView lottieAnimationView;
+
+    FirebaseDatabase database;
+    DatabaseReference userRef;
 
 
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -99,6 +112,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
         mAuth = FirebaseAuth.getInstance();
+
+        database = FirebaseDatabase.getInstance();
+        userRef = database.getReference("users");
 
         Button sign_in_Btn = findViewById(R.id.button_Login);
         email_login = findViewById(R.id.emailEditText);
@@ -156,7 +172,7 @@ public class LoginActivity extends AppCompatActivity {
         forgot_pass_tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openforgotDialog();
+                showForgotPasswordDialog();
             }
         });
 
@@ -216,11 +232,18 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
                             current_user = mAuth.getCurrentUser();
+
+                            SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putBoolean("isLoggedIn", true);
+                            editor.apply();
                             Toast.makeText(LoginActivity.this,"Sign in successful.",Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                             updateUI(current_user);
+
+
                         } else {
                             Log.w(TAG,"Something went wrong...",task.getException());
                         }
@@ -228,8 +251,83 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void openforgotDialog() {
+    private void showForgotPasswordDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_reset_password, null);
+        builder.setView(dialogView);
 
+        EditText emailEditText = dialogView.findViewById(R.id.emailEditText);
+        Button submitBtn = dialogView.findViewById(R.id.submitBtn);
+        Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+
+
+
+        AlertDialog dialog = builder.create();
+
+
+
+        // Set the background of the dialog window to transparent
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+
+
+        submitBtn.setOnClickListener(v -> {
+            String email = emailEditText.getText().toString().trim();
+            if (!isValidEmail(email)) {
+                Toast.makeText(LoginActivity.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            resetPassword(email);
+            dialog.dismiss();
+        });
+
+        cancelBtn.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+
+    private boolean isValidEmail(String email) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            return false;
+        }
+
+        // Extract domain from email
+        String[] emailParts = email.split("@");
+        if (emailParts.length != 2) {
+            return false;
+        }
+        String domain = emailParts[1].toLowerCase();
+
+        // Check if domain is allowed
+        return domain.endsWith("gmail.com") || domain.endsWith("yahoo.com") || domain.endsWith("hotmail.com");
+    }
+
+
+
+    private void resetPassword(String email) {
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Password reset email sent", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Failed to send reset email", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
+    private void saveUserProfileToDatabase(FirebaseUser user) {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        String username = account != null ? account.getDisplayName() : "";
+        String phoneNumber = "";
+
+        UserProfile userProfile = new UserProfile(username,user.getEmail(),phoneNumber);
+        userRef.child(user.getUid()).setValue(userProfile);
     }
 
 

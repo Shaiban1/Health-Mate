@@ -15,4 +15,29 @@
     <string name="Day_Time">Morning</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Enter your email or phone number to receive a verification code</string>
+    <string name="login_to_your_account_textView">Login to your Account</string>
+    <string name="morning_reminder">Morning</string>
+    <string name="afternoon_reminder">Afternoon</string>
+    <string name="evening_reminder">Evening</string>
+    <string name="night_reminder">Night</string>
+    <string name="logout_button_main">Logout</string>
+    <string name="string_block_time">You can try again in: 00:00</string>
+    <string name="submit_btn_phone">Get OTP</string>
+    <string name="phone_number_hint">Phone Number</string>
+    <string name="email_text_hint">Email address</string>
+    <string name="verify_your_phone_number_tv">Verify Your Phone Number</string>
+    <string name="phone_verify_desc">Please enter your phone number to receive \na verification code.</string>
+
+
+    <string-array name="duration_options">
+        <item>10 days</item>
+        <item>20 days</item>
+        <item>1 month</item>
+        <item>2 months</item>
+        <item>3 months</item>
+    </string-array>
+    <string-array name="meal_timing_options">
+        <item>Before Meal</item>
+        <item>After Meal</item>
+    </string-array>
 </resources>
