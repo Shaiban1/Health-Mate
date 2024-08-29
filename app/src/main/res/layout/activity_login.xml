@@ -10,7 +10,7 @@
     android:fitsSystemWindows="true"
     tools:context="activities.LoginActivity">
 
-    <!-- Container for Lottie Animation -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -20,16 +20,14 @@
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottieAnimationView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:scaleType="fitXY"
             app:lottie_rawRes="@raw/lottieflow_login"
             app:lottie_loop="true"
-            android:layout_marginBottom="6dp"
             app:lottie_autoPlay="true"/>
     </LinearLayout>
 
-    <!-- Container for Other UI Components -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,52 +38,106 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Login to your Account"
+            android:text="@string/login_to_your_account_textView"
             android:fontFamily="@font/medium"
             android:textColor="@android:color/black"
             android:textSize="24sp"
             android:layout_marginBottom="20dp"/>
 
-        <EditText
-            android:id="@+id/emailEditText"
-            style="@style/LoginTextInput"
-            android:hint="@string/email_hint"
-            android:layout_marginStart="20dp"
-            android:textCursorDrawable="@drawable/custom_cursor"
-            android:layout_marginEnd="20dp"
-            android:inputType="textEmailAddress"
-            android:layout_marginBottom="16dp"/>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/textInputLayoutPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="32dp"
+            android:hint="@string/email_text_hint"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/logo_color"
+            app:boxStrokeWidth="2dp"
+            app:boxCornerRadiusTopStart= "4dp"
+            app:boxCornerRadiusTopEnd="4dp"
+            app:boxCornerRadiusBottomStart="4dp"
+            app:boxCornerRadiusBottomEnd="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvDescription">
 
-        <EditText
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailEditText"
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:backgroundTint="@color/white"
+                android:layout_gravity="center"
+                android:fontFamily="@font/rb_regular"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/pitch_dark_grey"
+                android:layout_margin="10dp"
+                android:padding="14dp"
+                android:textSize="16sp" />
+
+
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/textInputLayoutPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="32dp"
+            android:hint="Password"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/colorPrimary"
+            app:boxStrokeWidth="2dp"
+            app:endIconMode="password_toggle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/emailEditText">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/passwordEditText"
-            style="@style/LoginTextInput"
-            android:hint="@string/password_hint"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:textCursorDrawable="@drawable/custom_cursor"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/white"
+            android:fontFamily="@font/rb_regular"
             android:inputType="textPassword"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="@color/pitch_dark_grey"
+            android:layout_margin="10dp"
+            android:padding="14dp"
+            android:textSize="16sp" />
 
-        <TextView
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
             android:id="@+id/forgotPasswordTextView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/forgot_password_login"
-            android:textColor="@color/blue"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="40dp"
             android:layout_marginBottom="16dp"
-            android:textSize="16sp"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="@string/forgot_password_login"
+            android:textColor="@color/logo_color"
+            android:textSize="16sp"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <Button
             android:id="@+id/button_Login"
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:text="@string/sign_in_login_tv"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_gravity="center"
             android:background="@drawable/rounded_button_with_shadow"
             style="@style/LoginButton"
             android:elevation="4dp"
@@ -97,7 +149,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/or_sign_in_with_tv"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/light_grey"
             android:layout_marginBottom="16dp"/>
 
         <LinearLayout
@@ -139,6 +191,7 @@
             android:layout_width="wrap_content"
             android:text="@string/don_t_have_an_account_sign_up_tv"
             android:layout_marginTop="24dp"
-            android:textColor="@color/blue"/>
+            android:fontFamily="@font/robot_black"
+            android:textColor="@color/logo_color"/>
     </LinearLayout>
 </LinearLayout>

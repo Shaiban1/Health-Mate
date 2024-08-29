@@ -61,12 +61,20 @@
         android:layout_gravity="center"
         android:layout_marginTop="16dp"/>
 
+    <!-- Auto Fill OTP TextView -->
+
+
     <!-- Verify OTP Button -->
     <Button
         android:id="@+id/verifyOtpButton"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="Verify OTP"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:background="@drawable/rounded_button_with_shadow"
+        android:backgroundTint="@color/colorPrimary"
+        style="@style/LoginButton"
         android:layout_marginTop="16dp"/>
 
 </LinearLayout>

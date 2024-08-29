@@ -30,6 +30,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    viewBinding {
+        enable = true
+    }
 }
 
 dependencies {
@@ -39,6 +43,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -48,4 +53,8 @@ dependencies {
     implementation (libs.lottie)
     implementation(platform(libs.firebase.bom))
     implementation(libs.play.services.auth)
+    implementation (libs.core.splashscreen)
+    implementation ("com.google.firebase:firebase-core:21.1.0")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+
 }
