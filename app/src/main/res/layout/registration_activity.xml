@@ -6,13 +6,12 @@ android:id="@+id/main"
 android:layout_width="match_parent"
     android:orientation="vertical"
 android:layout_height="match_parent"
-tools:context=".activities.RegistrationActivity">
+tools:context=".activities.registrationActivity">
 
     <ImageView
         android:id="@+id/regpagelogo"
         android:layout_width="wrap_content"
         android:layout_height="169dp"
-        android:maxHeight="120dp"
         android:src="@drawable/hmlogow">
     </ImageView>
     <TextView
@@ -29,11 +28,13 @@ tools:context=".activities.RegistrationActivity">
     <EditText
         android:id="@+id/regemail"
         style="@style/LoginTextInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:hint="@string/email_hint"
         android:textColor="@color/black"
         android:layout_marginStart="20dp"
         android:textCursorDrawable="@drawable/custom_cursor"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="30dp"
         android:inputType="textEmailAddress"
         android:layout_marginBottom="16dp"/>
 
@@ -41,22 +42,32 @@ tools:context=".activities.RegistrationActivity">
 
     <EditText
         android:id="@+id/passwordEditText"
-        style="@style/LoginTextInput"
         android:hint="@string/password_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/LoginTextInput"
         android:textColor="@color/black"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="30dp"
         android:inputType="textPassword"
         android:layout_marginBottom="8dp"/>
     <EditText
         android:id="@+id/confirmpasswordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         style="@style/LoginTextInput"
         android:hint="@string/confirm_password"
         android:textColor="@color/black"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="30dp"
         android:inputType="textPassword"
         android:layout_marginBottom="8dp"/>
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="show password"
+        android:id="@+id/showpwd"/>
 
     <CheckBox
         android:id="@+id/checkagreements"
@@ -78,6 +89,7 @@ tools:context=".activities.RegistrationActivity">
         android:layout_gravity="center"
         android:gravity="center"
         android:id="@+id/verifyMail"
+        android:textColor="#3165d9"
         android:text="Verify Mail"
         android:layout_marginBottom="20dp"
         android:background="@drawable/ripple_effect" />
@@ -92,7 +104,7 @@ tools:context=".activities.RegistrationActivity">
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="20dp"
         android:background="#3165d9"
         android:elevation="4dp"
         android:text="@string/sign_up"
