@@ -35,12 +35,11 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="100dp"
             android:background="?attr/selectableItemBackground"
-            app:tabIndicatorColor="#007BFF"
+            app:tabIndicatorColor="@color/logo_color"
             app:tabIndicatorHeight="3dp"
-            app:tabSelectedTextColor="#007BFF"
+            app:tabSelectedTextColor="@color/logo_color"
             app:tabTextColor="#9E9E9E" />
 
-        <!-- Navigation Button -->
         <Button
             android:id="@+id/getStartedButton"
             android:layout_width="wrap_content"

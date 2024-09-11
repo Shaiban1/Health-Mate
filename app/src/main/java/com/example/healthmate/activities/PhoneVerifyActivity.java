@@ -48,7 +48,6 @@ public class PhoneVerifyActivity extends AppCompatActivity {
     FrameLayout loadingOverlay;
     private static final long BLOCK_DURATION_MS = 5 * 60 * 1000; // Example: 5 minutes block duration
     private long blockEndTime = 0;
-    private String phoneNumber;
     private EditText otpBox1, otpBox2, otpBox3, otpBox4, otpBox5, otpBox6;
     private BottomSheetDialog bottomSheetDialog;
     private String verificationId;

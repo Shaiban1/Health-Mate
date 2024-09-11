@@ -1,115 +1,146 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
-    android:minWidth="300dp"
     android:background="@drawable/dialog_background">
 
-    <com.google.android.material.textfield.TextInputLayout
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Reminder"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:fontFamily="@font/medium"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Reminder Name -->
+    <EditText
+        android:id="@+id/reminder_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Reminder Name"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"> <!-- OutlinedBox style -->
+        android:inputType="text"
+        android:padding="8dp" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/reminder_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Pills Count"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"> <!-- OutlinedBox style -->
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/pills_count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <CheckBox
-        android:id="@+id/daily_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Daily" />
-
-    <GridLayout
+    <!-- Pill Count Section -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="8dp"
-        android:columnCount="5"> <!-- Padding for better spacing -->
+        android:layout_marginTop="16dp">
 
-        <CheckBox
-            android:id="@+id/monday"
+        <TextView
+            android:id="@+id/pill_count_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:textColor="@color/dark_grey"
+            android:text="Pill Count: 0"
+            android:gravity="center_vertical" />
+
+        <Button
+            android:id="@+id/increment_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mon" />
-        <CheckBox
-            android:id="@+id/tuesday"
+            android:text="+"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            style="@style/LoginButton"
+            android:background="@drawable/button_counter_minus"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/decrement_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tue" />
-        <CheckBox
-            android:id="@+id/wednesday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Wed" />
-        <CheckBox
-            android:id="@+id/thursday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Thu" />
-        <CheckBox
-            android:id="@+id/friday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fri" />
-        <CheckBox
-            android:id="@+id/saturday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sat" />
-        <CheckBox
-            android:id="@+id/sunday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sun" />
-    </GridLayout>
+            android:textSize="15sp"
+            android:textStyle="bold"
+            style="@style/LoginButton"
+            android:background="@drawable/button_counter_plus"
+            android:text="-" />
+
+    </LinearLayout>
+
+    <!-- Day Picker -->
+    <Spinner
+        android:id="@+id/days_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:spinnerMode="dropdown" />
+
+    <!-- Time Picker Button -->
+    <Button
+        android:id="@+id/select_time_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Time"
+        android:background="@drawable/rounded_button_with_shadow"
+        style="@style/LoginButton"
+        android:layout_marginTop="16dp" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="end"
-        android:paddingTop="16dp"> <!-- Padding for better spacing -->
+        android:layout_marginTop="16dp">
+
+
+        <Spinner
+            android:id="@+id/ringtone_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="80dp"
+            android:layout_marginTop="16dp" />
+
+        <!-- Play Ringtone Button -->
+        <ImageButton
+            android:id="@+id/play_ringtone_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="-70dp"
+            android:background="@drawable/baseline_play_circle_24" />
+
+
+    </LinearLayout>
+
+
+        <!-- Ringtone Spinner -->
+
+    <!-- Save and Cancel Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp">
 
         <Button
             android:id="@+id/save_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Save"
-            android:background="@drawable/rounded_button_with_shadow"
+            android:layout_weight="1"
             style="@style/LoginButton"
-            android:layout_marginEnd="8dp"/> <!-- Spacing between buttons -->
+            android:background="@drawable/rounded_button_with_shadow"
+            android:text="Save" />
 
         <Button
             android:id="@+id/cancel_btn_dialog"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Cancel"
-            android:elevation="4dp"
             android:backgroundTint="@color/white"
             android:background="@drawable/rounded_button_with_shadow"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/dark_grey"
             style="@style/ButtonsWithOffSide"
-
-            android:textSize="16sp"/>
+            android:layout_marginStart="8dp" />
     </LinearLayout>
+
 </LinearLayout>

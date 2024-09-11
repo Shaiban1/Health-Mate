@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 android {
@@ -9,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.healthmate"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -34,6 +35,9 @@ android {
     viewBinding {
         enable = true
     }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 dependencies {
@@ -44,6 +48,8 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
+    implementation(libs.room.common)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -54,5 +60,17 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.play.services.auth)
     implementation (libs.core.splashscreen)
-    implementation ("com.google.firebase:firebase-core:21.1.0")
+    implementation (libs.firebase.core)
+    implementation (libs.room.runtime)
+    annotationProcessor (libs.room.compiler)
+    implementation (libs.room.ktx)
+    implementation ("it.xabaras.android:recyclerview-swipedecorator:1.4")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4") // For ViewModel with Kotlin extensions
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4") // For LiveData with Kotlin extensions
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
+    implementation ("androidx.paging:paging-runtime:3.3.2")
+    implementation ("androidx.viewpager2:viewpager2:1.1.0")
+
+
 }

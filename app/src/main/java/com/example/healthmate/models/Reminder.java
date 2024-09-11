@@ -1,35 +1,43 @@
 package com.example.healthmate.models;
 
-import java.util.List;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+import java.util.Objects;
+
+@Entity(tableName = "reminders")
 public class Reminder {
-
-    private String reminderId;
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private String name;
-    private int pillsCount;
-    private boolean isDaily;
-    private List<String> selectedDays;
-    private String timeOfDay;
+    private int pillCount;
+    private String time;
+    private String day;
+    private String ringtoneResId;
+    private boolean taken;// Add this field for storing ringtone URI
 
+    // Default constructor
     public Reminder() {
-
     }
 
-    public Reminder(String reminderId, String name, int pillsCount, boolean isDaily, List<String> selectedDays, String timeOfDay) {
-        this.reminderId = reminderId;
+    // Constructor to initialize all fields
+    public Reminder(String name, int pillCount, String time, String day, String ringtoneResId) {
         this.name = name;
-        this.pillsCount = pillsCount;
-        this.isDaily = isDaily;
-        this.selectedDays = selectedDays;
-        this.timeOfDay = timeOfDay;
+        this.pillCount = pillCount;
+        this.time = time;
+        this.day = day;
+        this.ringtoneResId = ringtoneResId;
     }
 
-    public String getReminderId() {
-        return reminderId;
+
+    // Getter and Setter methods
+
+    public int getId() {
+        return id;
     }
 
-    public void setReminderId(String reminderId) {
-        this.reminderId = reminderId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -40,35 +48,77 @@ public class Reminder {
         this.name = name;
     }
 
-    public int getPillsCount() {
-        return pillsCount;
+    public int getPillCount() {
+        return pillCount;
     }
 
-    public void setPillsCount(int pillsCount) {
-        this.pillsCount = pillsCount;
+    public void setPillCount(int pillCount) {
+        this.pillCount = pillCount;
     }
 
-    public boolean isDaily() {
-        return isDaily;
+    public String getTime() {
+        return time;
     }
 
-    public void setDaily(boolean daily) {
-        isDaily = daily;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public List<String> getSelectedDays() {
-        return selectedDays;
+    public String getDay() {
+        return day;
     }
 
-    public void setSelectedDays(List<String> selectedDays) {
-        this.selectedDays = selectedDays;
+    public void setDay(String day) {
+        this.day = day;
     }
 
-    public String getTimeOfDay() {
-        return timeOfDay;
+    public String getRingtoneResId() {
+        return ringtoneResId;
     }
 
-    public void setTimeOfDay(String timeOfDay) {
-        this.timeOfDay = timeOfDay;
+    public void setRingtoneResId(String ringtoneResId) {
+        this.ringtoneResId = ringtoneResId;
+    }
+
+    public boolean isTaken() {
+        return taken;
+    }
+
+    public void setTaken(boolean taken) {
+        this.taken = taken;
+    }
+
+    @Override
+    public String toString() {
+        return "Reminder{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", pillCount=" + pillCount +
+                ", time='" + time + '\'' +
+                ", day='" + day + '\'' +
+                ", ringtoneResId='" + ringtoneResId + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Reminder reminder = (Reminder) obj;
+        return Objects.equals(getId(), reminder.getId()) &&
+                Objects.equals(getPillCount(), reminder.getPillCount()) &&
+                Objects.equals(getTime(), reminder.getTime()) &&
+                Objects.equals(getDay(), reminder.getDay()) &&
+                Objects.equals(getRingtoneResId(), reminder.getRingtoneResId())
+                ;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(),getName(),getPillCount(),getTime(),getDay(),getRingtoneResId());
     }
 }

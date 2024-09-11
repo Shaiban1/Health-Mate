@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/cardview"
+    android:layout_height="wrap_content"
+    android:padding="14dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:backgroundTint="@android:color/white"
+        android:elevation="4dp"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintWidth_default="wrap">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Header Area (Always Visible) -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <!-- Reminder Name -->
+                <TextView
+                    android:id="@+id/currentReminderName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reminder Name"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- Pill Count -->
+                <TextView
+                    android:id="@+id/pillCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/currentReminderName"
+                    android:layout_marginTop="8dp"
+                    android:text="pills: 4"
+                    android:textSize="14sp" />
+
+                <!-- Time -->
+
+                <!-- Day -->
+                <TextView
+                    android:id="@+id/reminderTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/pillCount"
+                    android:layout_marginTop="-19dp"
+                    android:text="7:00 AM"
+                    android:layout_marginStart="60dp"
+                    android:textSize="14sp" />
+
+                <!-- Status -->
+                <TextView
+                    android:id="@+id/reminderDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/reminderTime"
+                    android:layout_marginTop="-18dp"
+                    android:layout_marginStart="130dp"
+                    android:text="Monday"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/reminderStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/reminderDay"
+                    android:layout_marginTop="4dp"
+                    android:text="Now Running"
+                    android:textColor="@android:color/holo_green_dark"
+                    android:textSize="14sp" />
+
+                <!-- Expand/Collapse Button -->
+                <ImageView
+                    android:id="@+id/expandButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/baseline_keyboard_arrow_down_24" />
+            </RelativeLayout>
+
+            <!-- Hidden Area (Expandable) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/remindersRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" /> <!-- Initially hidden -->
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

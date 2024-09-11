@@ -1,126 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:id="@+id/main"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".activities.RegistrationActivity">
-
-<!-- Container for Lottie Animation -->
-<LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="1dp"
-    android:layout_weight="1"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activities.RegistrationActivity">
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lottieAnimationView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scaleType="fitXY"
-        app:lottie_rawRes="@raw/lottieflow_login"
-        app:lottie_loop="true"
-        android:layout_marginBottom="6dp"
-        app:lottie_autoPlay="true"/>
-</LinearLayout>
+        android:layout_height="300dp"
+       >
 
-<!-- Container for Other UI Components -->
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:layout_marginVertical="100dp"
-    android:orientation="vertical">
+        <!-- Animation View -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieAnimationView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:scaleType="fitXY"
+            app:lottie_rawRes="@raw/lottieflow_login"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"/>
+
+        <!-- Overlapping Logo -->
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/regpagelogo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            app:civ_border_width="2dp"
+            app:civ_border="true"
+            app:civ_border_color="@color/logo_color"
+            android:src="@drawable/applogo"/>
+    </FrameLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Account"
+        android:layout_gravity="center"
         android:fontFamily="@font/medium"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        android:text="Create Account"
+        android:shadowColor="@color/black"
+        android:textColor="@color/logo_color"
+        android:textSize="24sp" />
 
-    <EditText
-        android:id="@+id/regemail"
-        style="@style/LoginTextInput"
-        android:hint="@string/email_hint"
-        android:textColor="@color/black"
-        android:layout_marginStart="20dp"
-        android:textCursorDrawable="@drawable/custom_cursor"
-        android:layout_marginEnd="20dp"
-        android:inputType="textEmailAddress"
-        android:layout_marginBottom="16dp"/>
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/textInputLayoutEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="32dp"
+        android:hint="@string/email_text_hint"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@color/logo_color"
+        app:boxStrokeWidth="2dp"
+        app:boxCornerRadiusTopStart= "4dp"
+        app:boxCornerRadiusTopEnd="4dp"
+        app:boxCornerRadiusBottomStart="4dp"
+        app:boxCornerRadiusBottomEnd="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDescription">
 
-    <EditText
-        android:id="@+id/regmobile"
-        style="@style/LoginTextInput"
-        android:hint="@string/contact_hint"
-        android:textColor="@color/black"
-        android:layout_marginStart="20dp"
-        android:textCursorDrawable="@drawable/custom_cursor"
-        android:layout_marginEnd="20dp"
-        android:inputType="textPhonetic"
-        android:layout_marginBottom="16dp"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/regemail"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:drawablePadding="10dp"
+            android:backgroundTint="@color/white"
+            android:layout_gravity="center"
+            android:fontFamily="@font/rb_regular"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/pitch_dark_grey"
+            android:layout_margin="10dp"
+            android:padding="14dp"
+            android:textSize="16sp" />
 
-    <EditText
-        android:id="@+id/passwordEditText"
-        style="@style/LoginTextInput"
-        android:hint="@string/password_hint"
-        android:textColor="@color/black"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:textCursorDrawable="@drawable/custom_cursor"
-        android:inputType="textPassword"
-        android:layout_marginBottom="8dp"/>
 
-    <TextView
-        android:id="@+id/forgotPasswordTextView"
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/textInputLayoutPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Password"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@color/colorPrimary"
+        app:boxStrokeWidth="2dp"
+        app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/emailEditText">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordEditText"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/white"
+            android:fontFamily="@font/rb_regular"
+            android:inputType="textPassword"
+            android:textColor="@color/pitch_dark_grey"
+            android:layout_margin="10dp"
+            android:padding="14dp"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/textInputLayoutPasswordConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Password"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@color/colorPrimary"
+        app:boxStrokeWidth="2dp"
+        app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/emailEditText">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/confirmpasswordEditText"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/white"
+            android:fontFamily="@font/rb_regular"
+            android:inputType="textPassword"
+            android:textColor="@color/pitch_dark_grey"
+            android:layout_margin="10dp"
+            android:padding="14dp"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+    <CheckBox
+        android:id="@+id/checkagreements"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/forgot_password_login"
-        android:textColor="@color/blue"
-        android:layout_gravity="end"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="16dp"
-        android:textSize="16sp"
-        android:clickable="true"
-        android:focusable="true"/>
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:shadowColor="#3165d9"
+        android:text="I agree to all the Terms and Conditions"
+        android:textColor="#3165d9"
+        android:textStyle="italic"/>
 
     <Button
-        android:id="@+id/button_Login"
+        android:id="@+id/btnSignUp"
+        style="@style/LoginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/sign_up"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_button_with_shadow"
-        style="@style/LoginButton"
         android:elevation="4dp"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="24dp"/>
-
-
+        android:layout_marginTop="20dp"
+        android:text="@string/sign_up"
+        android:textColor="@android:color/white" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center">
+        android:orientation="vertical">
 
-        <CheckBox
+        <TextView
+            android:id="@+id/checksignintv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="I agree to all the Terms and Conditions"></CheckBox>
-
-
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:text="Already have an account? Sign In"
+            android:textColor="#3165d9"
+            android:textSize="20sp" />
     </LinearLayout>
-
-
-</LinearLayout>
-
 </LinearLayout>

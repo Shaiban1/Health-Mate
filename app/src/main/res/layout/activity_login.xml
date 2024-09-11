@@ -185,7 +185,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/signUpTextView"
+            android:id="@+id/signUpTextView_redirect"
             style="@style/SignUpText"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"

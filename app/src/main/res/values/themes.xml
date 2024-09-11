@@ -59,6 +59,37 @@
     </style>
 
 
+    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemTextColor">@color/bottom_nav_title_color</item>
+    </style>
+
+    <style name="CustomDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dialog_background</item> <!-- Custom drawable for rounded corners -->
+        <item name="android:windowMinWidthMajor">280dp</item> <!-- Adjust width as needed -->
+        <item name="android:windowMinWidthMinor">280dp</item> <!-- Adjust width as needed -->
+    </style>
+
+
+
+    <style name="Widget.MyApp.Spinner" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- Customize the style as needed -->
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- Add other attributes as needed -->
+    </style>
+
+
+    <style name="Widget.MaterialComponents.BottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+
+
+
+
+
 
     <style name="Theme.HealthMate" parent="Base.Theme.HealthMate" />
 </resources>

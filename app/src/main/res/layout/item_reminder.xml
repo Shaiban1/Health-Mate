@@ -1,39 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_margin="10dp"
+    cardview:cardBackgroundColor="@color/grey_200"
+    cardview:cardCornerRadius="20dp"
+    cardview:contentPadding="8dp">
 
-    <TextView
-        android:id="@+id/reminder_name"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Reminder Name"
-        android:textSize="18sp"
-        android:textColor="@android:color/black" />
+        android:orientation="vertical"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/pills_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pills Count"
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray" />
+        <!-- Reminder Name -->
+        <TextView
+            android:id="@+id/reminderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Paracetamol"
+            android:textSize="16sp"
+            android:textColor="@color/pitch_dark_grey"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/time_of_day"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Time of Day"
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray" />
+        <!-- Pill Count -->
+        <TextView
+            android:id="@+id/pillCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="pills: 4"
+            android:layout_below="@id/reminderName"
+            android:textSize="14sp" />
 
-    <TextView
-        android:id="@+id/days"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Days"
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray" />
-</LinearLayout>
+        <!-- Time -->
+        <TextView
+            android:id="@+id/reminderTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1:00 PM"
+            android:layout_below="@id/pillCount"
+            android:textSize="14sp" />
+
+
+        <TextView
+            android:id="@+id/time_remaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="."
+            android:textColor="@android:color/holo_red_dark"
+            android:layout_below="@id/reminderTime" />
+
+        <ImageButton
+            android:id="@+id/delete_reminder"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/baseline_delete_24"
+            android:background="@drawable/flag_transparent"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="35dp"/>
+
+        <!-- Day -->
+        <TextView
+            android:id="@+id/reminderDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tuesday"
+            android:layout_below="@id/time_remaining"
+            android:textSize="14sp" />
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

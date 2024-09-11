@@ -5,6 +5,7 @@ circularimageview = "4.3.1"
 
 coreSplashscreen = "1.0.1"
 firebaseBom = "33.1.2"
+firebaseCore = "21.1.1"
 glide = "4.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -12,12 +13,15 @@ espressoCore = "3.6.1"
 appcompat = "1.7.0"
 lottie = "6.0.0"
 material = "1.12.0"
-activity = "1.9.1"
+activity = "1.9.2"
 constraintlayout = "2.1.4"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.0.0"
 playServicesAuth = "21.2.0"
 firebaseDatabase = "21.0.0"
+roomCommon = "2.6.1"
+kotlin = "2.0.20"
+coreKtx = "1.13.1"
 
 
 [libraries]
@@ -26,6 +30,7 @@ circularimageview = { module = "com.mikhaellopez:circularimageview", version.ref
 
 core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebaseCore" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -38,6 +43,11 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCommon" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomCommon" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomCommon" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 
 
@@ -45,6 +55,7 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database",
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 
 

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/main"
+    android:background="@color/logo_color_light"
+    android:padding="16dp">
+
+    <!-- Status Bar View -->
+    <com.example.healthmate.filesImp.StatusBarView
+        android:id="@+id/status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"/>
+
+
+    <TextView
+        android:id="@+id/skip_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Skip"
+        android:layout_marginStart="280dp"
+        android:drawableEnd="@drawable/baseline_keyboard_double_arrow_right_24"
+        android:textSize="22sp"
+        android:clickable="true" />
+
+    <!-- ViewPager for Fragments -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+
+
+
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+
+    <!-- Navigation Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/previous_button"
+            android:layout_width="130dp"
+            android:layout_height="44dp"
+            android:text="Previous"
+            android:background="@drawable/full_round_corner"
+            style="@style/LoginButton"
+            android:visibility="visible"
+            android:layout_marginStart="7dp"/>
+
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="130dp"
+            android:layout_height="44dp"
+            android:text="Next"
+            android:background="@drawable/full_round_corner"
+            style="@style/LoginButton"
+            android:layout_marginStart="20dp"
+   />
+
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="130dp"
+            android:layout_height="44dp"
+            android:text="Submit"
+            android:background="@drawable/full_round_corner"
+            style="@style/LoginButton"
+            android:layout_marginStart="20dp"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -5,4 +5,5 @@
 
     <color name="bottom_nav_item_color">#FFFFFF</color>
     <color name="dark_button_background_color">#ABB6FF</color>
+    <color name="ripple_bottom_nav">#54616161</color>
 </resources>

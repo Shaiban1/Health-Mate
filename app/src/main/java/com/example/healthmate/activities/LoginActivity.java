@@ -32,7 +32,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.healthmate.R;
-import com.example.healthmate.models.UserProfile;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -52,7 +52,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText email_login, password_login;
-    private TextView forgot_pass_tv;
+    private TextView forgot_pass_tv,redirect_to_signup;
 
 
     FirebaseAuth mAuth;
@@ -121,18 +121,7 @@ public class LoginActivity extends AppCompatActivity {
         ImageButton google_Sign_in_btn = findViewById(R.id.google_login_btn);
         ImageButton phone_verify_activity = findViewById(R.id.phone_Login);
         forgot_pass_tv = findViewById(R.id.forgotPasswordTextView);
-
-
-
-
-
-
-
-
-
-
-
-
+        redirect_to_signup = findViewById(R.id.signUpTextView_redirect);
 
         sign_in_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +162,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 showForgotPasswordDialog();
             }
+        });
+
+
+        redirect_to_signup.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this,RegistrationActivity.class);
+            startActivity(intent);
+            finish();
         });
 
     }
@@ -325,8 +321,7 @@ public class LoginActivity extends AppCompatActivity {
         String username = account != null ? account.getDisplayName() : "";
         String phoneNumber = "";
 
-        UserProfile userProfile = new UserProfile(username,user.getEmail(),phoneNumber);
-        userRef.child(user.getUid()).setValue(userProfile);
+
     }
 
 

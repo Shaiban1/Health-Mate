@@ -1,50 +1,47 @@
 package com.example.healthmate.activities;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.healthmate.R;
+
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
+import com.example.healthmate.fragment.DietFragment;
+import com.example.healthmate.fragment.HomeFragment;
+import com.example.healthmate.fragment.ProfileFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import com.airbnb.lottie.LottieAnimationView;
-import com.bumptech.glide.Glide;
-import com.example.healthmate.R;
-import com.example.healthmate.fragment.AfternoonFragment;
-import com.example.healthmate.fragment.EveningFragment;
-import com.example.healthmate.fragment.MorningFragment;
-import com.example.healthmate.fragment.NightFragment;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.mikhaellopez.circularimageview.CircularImageView;
+import java.util.Arrays;
 
-import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    CircularImageView circularImageView;
-    TextView user_name_txtVw;
-    TextView time_of_day_textview;
-    private final Handler handler = new Handler();
-    LottieAnimationView lottieAnimationView;
-    Button logout_button;
+    private static final int REQUEST_PERMISSION_CODE = 100;
 
-    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -52,160 +49,117 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        mAuth = FirebaseAuth.getInstance();
+        requestPermissions();
+        Toast.makeText(MainActivity.this, "Permission is required", Toast.LENGTH_SHORT).show();
 
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setItemIconTintList(getResources().getColorStateList(R.color.bottom_nav_icon_color,getTheme()));
 
-        circularImageView = findViewById(R.id.profile_image);
-        user_name_txtVw = findViewById(R.id.username_main);
-        time_of_day_textview = findViewById(R.id.time_of_day);
-        logout_button = findViewById(R.id.logout_button);
-        lottieAnimationView = findViewById(R.id.lottie_day_animation);
+        FragmentManager fragmentManager = getSupportFragmentManager();  // Initialize here
 
-        findViewById(R.id.morning_grid).setOnClickListener(v -> loadFragment(new MorningFragment()));
-        findViewById(R.id.afternoon_grid).setOnClickListener(v -> loadFragment(new AfternoonFragment()));
-        findViewById(R.id.evening_grid).setOnClickListener(v -> loadFragment(new EveningFragment()));
-        findViewById(R.id.night_grid).setOnClickListener(v -> loadFragment(new NightFragment()));
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment;
 
+            if (item.getItemId() == R.id.nav_home) {
+                selectedFragment = new HomeFragment();
+            } else if (item.getItemId() == R.id.nav_search) {
+                selectedFragment = new DietFragment();
+            } else if (item.getItemId() == R.id.nav_profile) {
+                selectedFragment = new ProfileFragment();
+            } else {
+                return false;
+            }
 
-
-
-
-
-
-        FirebaseUser user = mAuth.getCurrentUser();
-        if(user != null) {
-            updateUI(user);
-        } else {
-            redirectToLogin();
-        }
-
-        logout_button.setOnClickListener(view -> {
-            mAuth.signOut();
-            redirectToLogin();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, selectedFragment)
+                    .commit();
+            return true;
         });
 
-        updateTimeAndAnimation();
-        startDayNightCycleUpdate();
+        // Set default selection
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        setStatusBarColor(R.color.logo_color);
+
+        handleFragmentNavigation(getIntent());
+
     }
 
-    private void loadFragment(Fragment fragment) {
-        // Hide profile image and logout button when a fragment is loaded
-        findViewById(R.id.profile_image).setVisibility(View.GONE);
-        findViewById(R.id.logout_button).setVisibility(View.GONE);
+    private void requestPermissions() {
+        String[] permissions = new String[] {
+                Manifest.permission.WAKE_LOCK,
+                Manifest.permission.VIBRATE,
+                Manifest.permission.RECEIVE_BOOT_COMPLETED,
+                Manifest.permission.MODIFY_AUDIO_SETTINGS // Add this permission
+        };
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
+
+
+        // For Android 13 and later
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions = Arrays.copyOf(permissions, permissions.length + 1);
+            permissions[permissions.length - 1] = Manifest.permission.POST_NOTIFICATIONS;
+        }
+
+        boolean isPermissionGranted = true;
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                isPermissionGranted = false;
+                break;
+            }
+        }
+
+        // Request permissions only if they are not already granted
+        if (!isPermissionGranted) {
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION_CODE);
+        }
+    }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleFragmentNavigation(intent);
+    }
+
+    private void handleFragmentNavigation(Intent intent) {
+        if (intent != null) {
+            String fragmentToOpen = intent.getStringExtra("openFragment");
+            if ("home".equals(fragmentToOpen)) {
+                // Replace the fragment with the Home fragment
+                openHomeFragment();
+            }
+        }
+    }
+
+    private void openHomeFragment() {
+        Fragment homeFragment = new HomeFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, homeFragment) // R.id.fragment_container should be the FrameLayout or container for fragments in MainActivity's layout
                 .commit();
     }
 
+    private void setStatusBarColor(@ColorRes int colorRes) {
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getResources().getColor(colorRes, getTheme()));
+    }
+
+
+
     @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            // Show the profile image and logout button when no fragment is displayed
-            findViewById(R.id.profile_image).setVisibility(View.VISIBLE);
-            findViewById(R.id.logout_button).setVisibility(View.VISIBLE);
-
-            getSupportFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-
-    private void updateUI(FirebaseUser user) {
-        if(user != null) {
-            Uri photoUrl = user.getPhotoUrl();
-            if(photoUrl != null) {
-                Glide.with(this)
-                        .load(photoUrl)
-                        .into(circularImageView);
-            }
-
-            String userName = user.getDisplayName();
-            if(userName != null ) {
-                String greeting = "Hey, " + userName;
-                user_name_txtVw.setText(greeting);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, you can now display notifications and schedule exact alarms
+                // Set up the reminder alarm and notification code here
+                // ...
+            } else {
+                // Permission denied, you cannot display notifications and schedule exact alarms
+                // Handle the permission denial here
+                // ...
             }
         }
     }
-
-
-
-    private void updateTimeAndAnimation() {
-        String timeOfDay = getTimeOfDay();
-        time_of_day_textview.setText(timeOfDay);
-
-        applyLottieAnim(timeOfDay);
-    }
-
-    private String getTimeOfDay() {
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-
-        if(hour >= 5 && hour <12) {
-            return "Morning";
-        } else if (hour >= 12 && hour < 17) {
-            return "Afternoon";
-        } else if (hour>=17 && hour <21) {
-            return "Evening";
-        } else {
-            return "Night";
-        }
-    }
-
-
-    private void applyLottieAnim(String timeOfDay) {
-        int animationResId;
-
-        switch (timeOfDay) {
-            case "Morning":
-                animationResId = R.raw.morning;
-                break;
-            case "Afternoon":
-                animationResId = R.raw.afternoon;
-                break;
-
-            case "Evening" :
-                animationResId = R.raw.evening;
-                break;
-
-            case "Night":
-                animationResId = R.raw.night;
-                break;
-
-            default:
-                return;
-        }
-
-        lottieAnimationView.setAnimation(animationResId);
-        lottieAnimationView.playAnimation();
-
-    }
-
-    private void startDayNightCycleUpdate() {
-        Runnable updateTask = new Runnable() {
-            @Override
-            public void run() {
-                updateTimeAndAnimation();
-
-                handler.postDelayed(this,60000);
-            }
-        };
-        handler.post(updateTask);
-    }
-
-    private void redirectToLogin() {
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("isLoggedIn", false);
-        editor.apply();
-
-
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
 
 }

@@ -1,18 +1,21 @@
 <resources>
+
+
     <string name="app_name">Health Mate</string>
+
+    <string name="web_client_id">24883277407-los1apicic7eelpo97i50fib3185sjro.apps.googleusercontent.com</string>
+
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="forgot_password_login">Forgot Password?</string>
-    <string name="contact_hint"> Enter mobile number</string>
+    <string name="contact_hint">Password</string>
     <string name="sign_in_login_tv">Sign in</string>
     <string name="or_sign_in_with_tv">- Or sign in with -</string>
     <string name="signInBtn">signInBtn</string>
     <string name="phone_login_h">phone_login_h</string>
     <string name="don_t_have_an_account_sign_up_tv">Don\'t have an account? Sign up</string>
-    <string name="web_client_id">24883277407-los1apicic7eelpo97i50fib3185sjro.apps.googleusercontent.com</string>
     <string name="user_display_name">User</string>
     <string name="Day_Time">Morning</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Enter your email or phone number to receive a verification code</string>
     <string name="login_to_your_account_textView">Login to your Account</string>
     <string name="morning_reminder">Morning</string>
@@ -26,17 +29,32 @@
     <string name="email_text_hint">Email address</string>
     <string name="verify_your_phone_number_tv">Verify Your Phone Number</string>
     <string name="phone_verify_desc">Please enter your phone number to receive \na verification code.</string>
+    <string name="sign_up_textview">Sign up</string>
+    <string name="upcoming_reminders">sdfodfoe</string>
+    <string name="confirm_password">Confirm password\n</string>
+    <string name="sign_up">Sign up</string>
 
 
-    <string-array name="duration_options">
-        <item>10 days</item>
-        <item>20 days</item>
-        <item>1 month</item>
-        <item>2 months</item>
-        <item>3 months</item>
+    <string-array name="days_array">
+        <item>Daily</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
     </string-array>
-    <string-array name="meal_timing_options">
-        <item>Before Meal</item>
-        <item>After Meal</item>
+
+
+    <string-array name="ringtone_options">
+        <item>Ringtone 1</item>
+        <item>Ringtone 2</item>
+        <item>Ringtone 3</item>
+        <item>Ringtone 4</item>
+        <item>Ringtone 5</item>
+        <item>Default Ringtone</item>
     </string-array>
+
+
 </resources>

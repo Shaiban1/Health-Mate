@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "24883277407",
+    "firebase_url": "https://healthmate-01-default-rtdb.firebaseio.com",
     "project_id": "healthmate-01",
     "storage_bucket": "healthmate-01.appspot.com"
   },
