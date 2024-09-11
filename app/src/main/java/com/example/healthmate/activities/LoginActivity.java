@@ -101,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
         lottieAnimationView.setAnimation(R.raw.lottieflow_login); // Replace with your animation file name
         lottieAnimationView.loop(true);
         lottieAnimationView.playAnimation();
+       // Intent ir = getIntent();
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
