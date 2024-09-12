@@ -7,6 +7,7 @@
     <color name="grey_200">#D9D9D9</color>
     <color name="light_grey">#FC595959</color>
     <color name="dark_grey">#424141</color>
+    <color name="card_dark_grey">#FFFFFF</color>
     <color name="pitch_dark_grey">#FC1D1D1D</color>
     <color name="cursor_color">#2196F3</color> <!-- Red cursor color -->
     <color name="logo_color">#005987</color>

@@ -1,5 +1,8 @@
 package com.example.healthmate.fragment;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.AlarmManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,16 +16,23 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.healthmate.R;
+import com.example.healthmate.activities.AiChatActivity;
+import com.example.healthmate.activities.GeminiResp;
 import com.example.healthmate.activities.LoginActivity;
 import com.example.healthmate.adapters.ReminderAdapter;
 import com.example.healthmate.filesImp.AlarmManagerHelper;
@@ -56,6 +66,10 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
     private ReminderAdapter adapter;
     private ReminderViewModel reminderViewModel;
     private boolean isExpanded = false;
+    private TextView chatSuggestionText;
+    private ImageButton chatActionButton;
+    private ArrayList<String> suggestions;
+    private int currentIndex = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,6 +81,21 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
         logout_button = view.findViewById(R.id.logout_button);
         remindersRecyclerView = view.findViewById(R.id.remindersRecyclerView);
         expandButton = view.findViewById(R.id.expandButton);
+        chatSuggestionText = view.findViewById(R.id.chat_suggestion_text);
+        chatActionButton = view.findViewById(R.id.chat_action_button);
+
+        // List of AI suggestions
+        suggestions = new ArrayList<>();
+        suggestions.add("How can I help you today?");
+        suggestions.add("What can I do for you?");
+        suggestions.add("Need assistance with something?");
+        suggestions.add("Do you have any questions?");
+
+        // Start the text animation
+        animateChatSuggestions();
+
+        // Animate the button at the end of the card
+        animateChatButton();
 
         FloatingActionButton fab = view.findViewById(R.id.fab_home);
 
@@ -110,6 +139,10 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
             redirectToLogin();
         });
 
+        chatActionButton.setOnClickListener(view1 -> {
+            circularRevealAnimation(view);
+        });
+
         // Update UI with Firebase user data
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -119,6 +152,91 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
         }
 
         return view;
+    }
+
+
+    private void circularRevealAnimation(final View view) {
+        // Get the center for the clipping circle
+        int cx = view.getWidth() / 2;
+        int cy = view.getHeight() / 2;
+
+        // Get the final radius for the clipping circle
+        float finalRadius = (float) Math.hypot(cx, cy);
+
+        // Create the circular reveal animation
+        Animator revealAnimator = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0f, finalRadius);
+        revealAnimator.setDuration(300); // Adjust the duration for smoothness
+
+        // Create the fade-out animation for the original view
+        AlphaAnimation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
+        fadeOutAnimation.setDuration(300); // Match the duration of the circular reveal
+
+        // Start both animations
+        view.startAnimation(fadeOutAnimation);
+        revealAnimator.start();
+
+        // Start AiChatActivity after the animation ends
+        revealAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {}
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // Start AiChatActivity
+                Intent intent = new Intent(getActivity(), AiChatActivity.class);
+                startActivity(intent);
+
+                // Optional: Override pending transition
+                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
+        });
+    }
+
+
+    private void animateChatSuggestions() {
+        final Handler handler = new Handler();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                // Animate TextView to slide in from the top
+                ObjectAnimator slideIn = ObjectAnimator.ofFloat(chatSuggestionText, "translationY", -200f, 0f);
+                slideIn.setInterpolator(new LinearInterpolator());
+                slideIn.setDuration(500);
+
+                // Set new suggestion text
+                chatSuggestionText.setText(suggestions.get(currentIndex));
+                currentIndex = (currentIndex + 1) % suggestions.size();
+
+                // Start the animation
+                slideIn.start();
+
+                // Delay for 2 seconds before showing the next text
+                handler.postDelayed(this, 2500);
+            }
+        };
+
+        handler.post(runnable);
+    }
+
+    private void animateChatButton() {
+        // Create a pulsing animation for the button
+        PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 0.8f, 1f);
+        PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 0.8f, 1f);
+
+        // Apply the PropertyValuesHolder to the FloatingActionButton
+        ObjectAnimator scaleDown = ObjectAnimator.ofPropertyValuesHolder(chatActionButton, scaleX, scaleY);
+        scaleDown.setDuration(1000);
+        scaleDown.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleDown.setRepeatMode(ObjectAnimator.REVERSE);
+        scaleDown.start();
     }
 
     private void openReminderDialog() {

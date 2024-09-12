@@ -15,6 +15,7 @@ import com.example.healthmate.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
 public class menudialog extends DialogFragment {
 
     private CircleImageView menuProfileImage;
