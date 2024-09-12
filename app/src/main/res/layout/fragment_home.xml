@@ -18,8 +18,7 @@
             android:layout_height="wrap_content"
             tools:context=".fragment.HomeFragment">
 
-            <!-- Your scrollable content here -->
-
+            <!-- Profile Section -->
             <LinearLayout
                 android:id="@+id/profile_section"
                 android:layout_width="0dp"
@@ -55,7 +54,7 @@
                         android:id="@+id/time_of_day"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="USername "
+                        android:text="Username"
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
 
@@ -69,6 +68,7 @@
                     android:text="@string/logout_button_main" />
             </LinearLayout>
 
+            <!-- Expandable Card -->
             <include
                 android:id="@+id/expandable_card"
                 layout="@layout/expandable_card"
@@ -78,28 +78,70 @@
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_section" />
+                app:layout_constraintTop_toBottomOf="@+id/profile_section"
+                app:layout_constraintBottom_toTopOf="@+id/ai_chat_card" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_home"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="16dp"
-                android:backgroundTint="@color/logo_color"
-                android:contentDescription="Add Reminder"
+            <!-- AI Chat Card -->
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/ai_chat_card"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:elevation="8dp"
-                android:src="@drawable/baseline_add_24"
-                android:tint="@android:color/white"
+                android:padding="14dp"
+                app:cardCornerRadius="50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.912"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.902" />
+                app:layout_constraintTop_toBottomOf="@+id/profile_section"
+                app:layout_constraintVertical_bias="0.3">
+
+                <TextView
+                    android:id="@+id/chat_suggestion_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:text="AI Chat"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
+
+                <ImageButton
+                    android:id="@+id/chat_action_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/ripple_oval"
+                    android:elevation="8dp"
+                    android:src="@drawable/baseline_send_24" />
+            </androidx.cardview.widget.CardView>
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </ScrollView>
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/logo_color"
+        android:contentDescription="Add Reminder"
+        android:elevation="8dp"
+        android:src="@drawable/baseline_add_24"
+        android:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.954"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.918" />
+    <!-- Floating Action Button (FAB) -->
 </LinearLayout>

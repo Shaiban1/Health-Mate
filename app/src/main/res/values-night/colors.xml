@@ -6,4 +6,6 @@
     <color name="bottom_nav_item_color">#FFFFFF</color>
     <color name="dark_button_background_color">#ABB6FF</color>
     <color name="ripple_bottom_nav">#54616161</color>
+    <color name="pitch_dark_grey">#C5C5C5</color>
+    <color name="card_dark_grey">#424141</color>
 </resources>

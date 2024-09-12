@@ -8,7 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.healthmate.R;
 
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class profile_section extends AppCompatActivity {
 
@@ -26,8 +28,6 @@ public class profile_section extends AppCompatActivity {
         username = findViewById(R.id.menu_username);
         loginMethod = findViewById(R.id.menu_login_method);
 
-        // Set up the profile image and username
-        // ...
 
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override

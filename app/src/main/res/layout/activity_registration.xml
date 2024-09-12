@@ -10,14 +10,13 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-       >
+        android:layout_height="240dp">
 
         <!-- Animation View -->
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottieAnimationView"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="240dp"
             android:scaleType="fitXY"
             app:lottie_rawRes="@raw/lottieflow_login"
             app:lottie_loop="true"
@@ -92,7 +91,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="14dp"
         android:layout_marginEnd="32dp"
         android:hint="Password"
         app:boxBackgroundMode="outline"
@@ -125,7 +123,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="14dp"
+
         android:layout_marginEnd="32dp"
         android:hint="Password"
         app:boxBackgroundMode="outline"
@@ -161,17 +159,14 @@
         android:layout_marginTop="20dp"
         android:shadowColor="#3165d9"
         android:text="I agree to all the Terms and Conditions"
-        android:textColor="#3165d9"
-        android:textStyle="italic"/>
+        android:textColor="#3165d9" />
 
     <Button
         android:id="@+id/btnSignUp"
         style="@style/LoginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_margin="50dp"
         android:background="@drawable/rounded_button_with_shadow"
         android:elevation="4dp"
         android:layout_marginTop="20dp"
@@ -185,13 +180,12 @@
 
         <TextView
             android:id="@+id/checksignintv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="50dp"
-            android:layout_marginEnd="50dp"
+            android:gravity="center_horizontal"
+            android:layout_marginStart="70dp"
             android:text="Already have an account? Sign In"
             android:textColor="#3165d9"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
     </LinearLayout>
 </LinearLayout>
