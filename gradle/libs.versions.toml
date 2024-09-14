@@ -22,6 +22,7 @@ firebaseDatabase = "21.0.0"
 roomCommon = "2.6.1"
 kotlin = "2.0.20"
 coreKtx = "1.13.1"
+firebaseStorage = "21.0.0"
 
 
 [libraries]
@@ -48,6 +49,7 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCom
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomCommon" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomCommon" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 
 
 

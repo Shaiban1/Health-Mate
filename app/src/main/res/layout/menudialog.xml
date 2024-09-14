@@ -1,55 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
 
+    <!-- Settings Icon at the top-right corner -->
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="116dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
 
+        <ImageView
+            android:id="@+id/settings_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/settings"
+        android:contentDescription="Settings"
+        android:padding="8dp"/>
+    </LinearLayout>
+
+    <!-- User Info Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="20dp">
+
+        <!-- Profile Image -->
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/menu_profile_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/backgroundprofilehm"
             app:civ_border_color="@color/white"
             app:civ_border_width="2dp" />
 
-        <ImageView
-            android:id="@+id/menu_edit_icon"
-            android:layout_width="66dp"
-            android:layout_height="66dp"
-            android:layout_marginLeft="0dp"
-            android:layout_gravity="top"
-            android:src="@drawable/pencil" />
-
+        <!-- User Info and Edit Icon -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_weight="1">
 
+            <!-- User Info (Username, Email, Phone, etc.) -->
             <TextView
                 android:id="@+id/menu_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
                 android:text="Username"
-                android:textStyle="bold" />
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
 
             <TextView
-                android:id="@+id/menu_login_method"
+                android:id="@+id/menu_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Login Details"
-                android:textSize="14sp" />
+                android:text="Email"
+                android:textSize="16sp"
+                android:layout_marginBottom="2dp" />
 
+            <TextView
+                android:id="@+id/menu_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone Number"
+                android:textSize="16sp"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:id="@+id/menu_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Age Group"
+                android:textSize="16sp"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:id="@+id/menu_gender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gender"
+                android:textSize="16sp"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:id="@+id/menu_blood_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blood Group"
+                android:textSize="16sp"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:id="@+id/menu_lifestyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lifestyle"
+                android:textSize="16sp" />
         </LinearLayout>
 
+        <!-- Edit Icon -->
+        <ImageView
+            android:id="@+id/menu_edit_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="top"
+            android:layout_marginStart="16dp"
+            android:contentDescription="Edit Profile"
+            android:padding="8dp"
+            android:src="@drawable/pencil" />
     </LinearLayout>
 
-        <!-- Menu options with icons... -->
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
 
-    </LinearLayout>
+    <!-- Logout text at the bottom -->
+    <TextView
+        android:id="@+id/logout_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:textSize="18sp"
+        android:textColor="@android:color/holo_red_dark"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="20dp"
+        android:clickable="true"
+        android:focusable="true" />
+
+</LinearLayout>
