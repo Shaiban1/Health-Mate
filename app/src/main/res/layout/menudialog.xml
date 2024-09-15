@@ -13,13 +13,7 @@
         android:orientation="horizontal"
         android:gravity="end">
 
-        <ImageView
-            android:id="@+id/settings_icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/settings"
-        android:contentDescription="Settings"
-        android:padding="8dp"/>
+
     </LinearLayout>
 
     <!-- User Info Section -->

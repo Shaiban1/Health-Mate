@@ -27,6 +27,9 @@
         android:theme="@style/Theme.HealthMate"
         tools:targetApi="31">
         <activity
+            android:name=".ProfileEditActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.AiChatActivity"
             android:exported="false"
             android:windowSoftInputMode="stateVisible|adjustResize" />
@@ -54,8 +57,9 @@
         <activity
             android:name=".activities.OnBoardActivity"
             android:exported="false" />
-        <activity android:name=".activities.ProfileEditActivity"
-            android:exported="false"/>
+        <activity
+            android:name=".activities."
+            android:exported="false" />
         <activity
             android:name=".activities.SurveyScreen"
             android:exported="false" />

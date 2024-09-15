@@ -5,125 +5,100 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Profile Image -->
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/edit_profile_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="center"
-        android:src="@drawable/backgroundprofilehm" /> <!-- Add a default image if no image is set -->
-
-    <!-- Username, Email, Phone -->
-    <EditText
-        android:id="@+id/edit_username"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Username"
-        android:inputType="textPersonName"
-        android:layout_marginTop="16dp" />
-
-    <EditText
-        android:id="@+id/edit_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        android:layout_marginTop="8dp" />
-
-    <EditText
-        android:id="@+id/edit_phone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Phone Number"
-        android:inputType="phone"
-        android:layout_marginTop="8dp" />
-
-    <!-- Age Group -->
-    <Spinner
-        android:id="@+id/edit_age_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:spinnerMode="dropdown" />
-
-    <!-- Gender Radio Group -->
-    <RadioGroup
-        android:id="@+id/edit_gender_group"
+    <!-- Toolbar or Title -->
+    <TextView
+        android:id="@+id/edit_profile_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+        android:text="Edit Profile"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
 
-        <RadioButton
-            android:id="@+id/gender_male"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Male" />
-
-        <RadioButton
-            android:id="@+id/gender_female"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Female" />
-    </RadioGroup>
-
-    <!-- Blood Group Spinner -->
-    <Spinner
-        android:id="@+id/edit_blood_group"
+    <!-- Sections -->
+    <LinearLayout
+        android:id="@+id/personal_details_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:spinnerMode="dropdown" />
+        android:orientation="vertical"
+        android:visibility="visible">
 
-    <!-- Lifestyle Radio Group -->
-    <RadioGroup
-        android:id="@+id/edit_lifestyle_group"
-        android:layout_width="wrap_content"
+        <!-- Personal Details Fields -->
+        <EditText
+            android:id="@+id/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your name"/>
+
+        <EditText
+            android:id="@+id/edit_age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your age"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/contact_details_section"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+        android:orientation="vertical"
+        android:visibility="gone">
 
-        <RadioButton
-            android:id="@+id/lifestyle_active"
-            android:layout_width="wrap_content"
+        <!-- Contact Details Fields -->
+        <EditText
+            android:id="@+id/edit_email"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Active" />
+            android:hint="Enter your email"/>
 
-        <RadioButton
-            android:id="@+id/lifestyle_neutral"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/edit_phone"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Neutral" />
+            android:hint="Enter your phone"/>
+    </LinearLayout>
 
-        <RadioButton
-            android:id="@+id/lifestyle_not_active"
-            android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/lifestyle_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- Lifestyle Fields -->
+        <EditText
+            android:id="@+id/edit_lifestyle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Not Active" />
-    </RadioGroup>
+            android:hint="Enter your lifestyle"/>
+    </LinearLayout>
 
-    <!-- Save and Cancel Buttons -->
+    <!-- Navigation Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         android:orientation="horizontal"
         android:gravity="center">
+
+        <Button
+            android:id="@+id/previous_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Previous"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next"/>
 
         <Button
             android:id="@+id/save_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Save"
-            android:layout_marginEnd="16dp"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@color/colorPrimary" />
-
-        <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@android:color/darker_gray" />
+            android:visibility="gone"/>
     </LinearLayout>
 
 </LinearLayout>

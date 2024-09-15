@@ -22,7 +22,7 @@ public class menudialog extends DialogFragment {
 
     private CircleImageView menuProfileImage;
     private TextView menuUsername, menuEmail, menuPhone, menuAge, menuGender, menuBloodGroup, menuLifestyle, logoutText;
-    private ImageView menuEditIcon, menuSettingsIcon;
+    private ImageView menuEditIcon;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,7 +38,6 @@ public class menudialog extends DialogFragment {
         menuBloodGroup = view.findViewById(R.id.menu_blood_group);
         menuLifestyle = view.findViewById(R.id.menu_lifestyle);
         menuEditIcon = view.findViewById(R.id.menu_edit_icon);
-        menuSettingsIcon = view.findViewById(R.id.settings_icon); // Settings Icon
         logoutText = view.findViewById(R.id.logout_text); // Logout Text
 
         // Fetch user details from Firebase
@@ -83,14 +82,7 @@ public class menudialog extends DialogFragment {
         });
 
         // Settings icon click listener
-        menuSettingsIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Open settings activity
-                Intent intent = new Intent(getActivity(), ProfileEditActivity.class);
-                startActivity(intent);
-            }
-        });
+
 
         // Logout click listener
         logoutText.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +90,7 @@ public class menudialog extends DialogFragment {
             public void onClick(View v) {
                 // Sign out from Firebase and redirect to MainActivity (or Login screen)
                 FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getActivity(), MainActivity.class);
+                Intent intent = new Intent(getActivity(), SplashScreenActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 getActivity().finish(); // Close the current activity
