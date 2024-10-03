@@ -16,7 +16,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".fragment.HomeFragment">
+            tools:context=".fragment.AiAssistFragment">
 
             <!-- Profile Section -->
             <LinearLayout
@@ -47,16 +47,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="username"
+                        android:layout_marginTop="16dp"
                         android:textColor="@android:color/black"
                         android:textSize="18sp" />
 
-                    <TextView
-                        android:id="@+id/time_of_day"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Username"
-                        android:textColor="@android:color/black"
-                        android:textSize="16sp" />
+
 
                 </LinearLayout>
 
@@ -99,6 +94,16 @@
                 app:layout_constraintTop_toBottomOf="@+id/profile_section"
                 app:layout_constraintVertical_bias="0.3">
 
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/id_anim_meta"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginStart="6dp"
+                    app:lottie_rawRes="@raw/metaanim"
+                    app:lottie_loop="true"
+                    app:lottie_autoPlay="true"/>
+
                 <TextView
                     android:id="@+id/chat_suggestion_text"
                     android:layout_width="wrap_content"
@@ -107,7 +112,7 @@
                     android:layout_marginTop="15dp"
                     android:gravity="center"
                     android:text="AI Chat"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/dark_grey"
                     android:textSize="14sp" />
 
                 <ImageButton

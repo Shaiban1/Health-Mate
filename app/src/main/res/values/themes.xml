@@ -86,6 +86,17 @@
     </style>
 
 
+    <style name="CustomButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/button_background_selector</item>
+        <item name="android:textColor">@color/button_text_selector</item>
+        <item name="cornerRadius">16dp</item> <!-- Optional: Set corner radius -->
+    </style>
+
+
+
+
+
+
 
 
 
