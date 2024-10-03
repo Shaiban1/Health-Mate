@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,12 +29,18 @@ public class RegistrationActivity extends AppCompatActivity {
     private CheckBox checkagreements;
     private Button btnSignUp;
     private FirebaseAuth mAuth;
+    private TextView redirectLogin;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         // Initialize UI components
         regemail = findViewById(R.id.regemail);
@@ -41,6 +48,9 @@ public class RegistrationActivity extends AppCompatActivity {
         confirmpasswordEditText = findViewById(R.id.confirmpasswordEditText);
         checkagreements = findViewById(R.id.checkagreements);
         btnSignUp = findViewById(R.id.btnSignUp);
+        redirectLogin = findViewById(R.id.redirect_to_login);
+
+
 
 
         // Initialize Firebase Auth
@@ -53,12 +63,14 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
 
-        // Handle window insets to adjust for system bars
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        redirectLogin.setOnClickListener(v -> {
+            Intent i = new Intent(RegistrationActivity.this,LoginActivity.class);
+            startActivity(i);
+            finish();
         });
+
+
+
     }
 
     // Email validation method

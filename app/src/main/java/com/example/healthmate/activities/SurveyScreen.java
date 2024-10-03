@@ -1,6 +1,7 @@
 package com.example.healthmate.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,11 +24,12 @@ import com.example.healthmate.fragment.FragmentAges;
 import com.example.healthmate.fragment.FragmentBloodGroup;
 import com.example.healthmate.fragment.LifestyleInput;
 import com.example.healthmate.fragment.NameFragment;
-import com.example.healthmate.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 
 import java.util.ArrayList;
@@ -119,52 +121,83 @@ public class SurveyScreen extends AppCompatActivity {
         FragmentBloodGroup bloodGroupFragment = (FragmentBloodGroup) adapter.getItem(2);
         LifestyleInput lifestyleInput = (LifestyleInput) adapter.getItem(3);
 
-        // Ensure fragments are not null and retrieve data
+        // Retrieve data from fragments
         String fullName = nameFragment.getName();
         String age = ageFragment.getSelectedAgeGroup();
         String bloodGroup = bloodGroupFragment.getSelectedBloodGroup();
         String lifestyle = lifestyleInput.getSelectedLifestyle();
+        Uri profileImageUri = nameFragment.getImageUri();
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
         if (user != null) {
             DatabaseReference userSurveyRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users")
-                    .child(user.getUid())
-                    .child("surveys");
+                    .child("users").child(user.getUid()).child("surveys");
 
-            // Create a Map for the survey data
+            // Create a map for the survey data
             Map<String, Object> surveyData = new HashMap<>();
             surveyData.put("name", fullName);
             surveyData.put("ageGroup", age);
             surveyData.put("bloodGroup", bloodGroup);
             surveyData.put("lifestyle", lifestyle);
 
-            // Log the survey data to debug
-            Log.d("SurveyData", "Name: " + fullName);
-            Log.d("SurveyData", "Age Group: " + age);
-            Log.d("SurveyData", "Blood Group: " + bloodGroup);
-            Log.d("SurveyData", "Lifestyle: " + lifestyle);
+            // Upload image and handle profile image URL
+            if (profileImageUri != null) {
+                uploadImageToFirebase(profileImageUri, user.getUid());
+            }
 
-            // Push the data to Firebase
-            userSurveyRef.push().setValue(surveyData)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(this, "Survey submitted successfully!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SurveyScreen.this, MainActivity.class));
-                            finish();
-                        } else {
-                            String errorMessage = task.getException() != null ? task.getException().getMessage() : "Unknown error";
-                            Log.e("FirebaseError", "Failed to submit survey: " + errorMessage);
-                            Toast.makeText(this, "Failed to submit survey: " + errorMessage, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            // Push the survey data to Firebase Database
+            userSurveyRef.push().setValue(surveyData).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(SurveyScreen.this, "Survey submitted successfully!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(SurveyScreen.this, MainActivity.class));
+                    finish();
+                } else {
+                    String errorMessage = task.getException() != null ? task.getException().getMessage() : "Unknown error";
+                    Log.e("FirebaseError", "Failed to submit survey: " + errorMessage);
+                    Toast.makeText(SurveyScreen.this, "Failed to submit survey: " + errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
         } else {
             Toast.makeText(this, "User is not authenticated. Please sign in to submit the survey.", Toast.LENGTH_SHORT).show();
         }
     }
 
 
+    private void uploadImageToFirebase(Uri imageUri, String uid) {
+        if (imageUri != null) {
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference()
+                    .child("profileImages").child(uid + ".jpg");
 
+            storageReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+                storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                    // Save this URL to Firebase Realtime Database
+                    saveProfileImageUrlToFirebase(uri.toString());
+                });
+            }).addOnFailureListener(e -> {
+                Log.e("FirebaseStorage", "Image upload failed: " + e.getMessage());
+                Toast.makeText(SurveyScreen.this, "Image upload failed!", Toast.LENGTH_SHORT).show();
+            });
+        }
+    }
+
+    private void saveProfileImageUrlToFirebase(String imageUrl) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user != null) {
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                    .child("users").child(user.getUid()).child("profileImageUrl");
+
+            userRef.setValue(imageUrl).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("FirebaseStorage", "Profile image URL saved successfully");
+                } else {
+                    Log.e("FirebaseStorage", "Failed to save profile image URL");
+                }
+            });
+        }
+
+    }
 }

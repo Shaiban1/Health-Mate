@@ -8,7 +8,6 @@
     android:background="@color/logo_color_light"
     android:padding="16dp">
 
-    <!-- Status Bar View -->
     <com.example.healthmate.filesImp.StatusBarView
         android:id="@+id/status_bar"
         android:layout_width="match_parent"
@@ -32,11 +31,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-
-
-
-
-
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
@@ -44,7 +38,6 @@
 
     </RelativeLayout>
 
-    <!-- Navigation Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

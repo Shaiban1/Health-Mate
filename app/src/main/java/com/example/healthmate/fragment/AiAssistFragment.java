@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.net.ParseException;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -29,19 +30,27 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.example.healthmate.R;
 import com.example.healthmate.activities.AiChatActivity;
-import com.example.healthmate.activities.GeminiResp;
 import com.example.healthmate.activities.LoginActivity;
 import com.example.healthmate.adapters.ReminderAdapter;
 import com.example.healthmate.filesImp.AlarmManagerHelper;
 import com.example.healthmate.filesImp.ReminderViewModel;
 import com.example.healthmate.filesImp.ReminderViewModelFactory;
 import com.example.healthmate.models.Reminder;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.text.SimpleDateFormat;
@@ -56,7 +65,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class HomeFragment extends Fragment implements ReminderDialogFragment.ReminderDialogListener {
+public class AiAssistFragment extends Fragment implements ReminderDialogFragment.ReminderDialogListener {
 
     private CircularImageView circularImageView;
     private TextView user_name_txtVw;
@@ -70,6 +79,7 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
     private ImageButton chatActionButton;
     private ArrayList<String> suggestions;
     private int currentIndex = 0;
+    private LottieAnimationView animationView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,6 +93,10 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
         expandButton = view.findViewById(R.id.expandButton);
         chatSuggestionText = view.findViewById(R.id.chat_suggestion_text);
         chatActionButton = view.findViewById(R.id.chat_action_button);
+        animationView = view.findViewById(R.id.id_anim_meta);
+
+        animationView.setAnimation(R.raw.metaanim);
+        animationView.playAnimation();
 
         // List of AI suggestions
         suggestions = new ArrayList<>();
@@ -95,7 +109,6 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
         animateChatSuggestions();
 
         // Animate the button at the end of the card
-        animateChatButton();
 
         FloatingActionButton fab = view.findViewById(R.id.fab_home);
 
@@ -135,8 +148,7 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
 
         // Handle logout button click
         logout_button.setOnClickListener(v -> {
-            mAuth.signOut();
-            redirectToLogin();
+            logout();
         });
 
         chatActionButton.setOnClickListener(view1 -> {
@@ -146,7 +158,8 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
         // Update UI with Firebase user data
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            updateUI(user);
+            String userId = user.getUid();
+            loadUserData(userId);
         } else {
             redirectToLogin();
         }
@@ -226,18 +239,7 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
         handler.post(runnable);
     }
 
-    private void animateChatButton() {
-        // Create a pulsing animation for the button
-        PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 0.8f, 1f);
-        PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 0.8f, 1f);
 
-        // Apply the PropertyValuesHolder to the FloatingActionButton
-        ObjectAnimator scaleDown = ObjectAnimator.ofPropertyValuesHolder(chatActionButton, scaleX, scaleY);
-        scaleDown.setDuration(1000);
-        scaleDown.setRepeatCount(ObjectAnimator.INFINITE);
-        scaleDown.setRepeatMode(ObjectAnimator.REVERSE);
-        scaleDown.start();
-    }
 
     private void openReminderDialog() {
         ReminderDialogFragment dialog = new ReminderDialogFragment(this);
@@ -292,22 +294,109 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
         AlarmManagerHelper.setAlarm(getContext(), triggerAtMillis, requestCode, repeatInterval, reminder.getRingtoneResId());
     }
 
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            Uri photoUrl = user.getPhotoUrl();
-            if (photoUrl != null) {
-                Glide.with(this)
-                        .load(photoUrl)
-                        .into(circularImageView);
-            }
 
-            String userName = user.getDisplayName();
-            if (userName != null) {
-                String greeting = "Hey, " + userName;
-                user_name_txtVw.setText(greeting);
+    private void loadUserData(String userId) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user == null) {
+            redirectToLogin();
+            return;
+        }
+
+        boolean isGoogleSignIn = false;
+
+        // Check if the user signed in with Google
+        for (com.google.firebase.auth.UserInfo profile : user.getProviderData()) {
+            if (profile.getProviderId().equals("google.com")) {
+                isGoogleSignIn = true;
+                break;
             }
         }
+
+        if (isGoogleSignIn) {
+            // User signed in with Google, so get Google profile information
+            String displayName = user.getDisplayName();
+            Uri profileImageUrl = user.getPhotoUrl();
+
+            if (displayName != null) {
+                user_name_txtVw.setText("Hey, " + displayName);
+            } else {
+                user_name_txtVw.setText("Hey, User");
+            }
+
+            if (profileImageUrl != null) {
+                // Load profile image using Glide
+                Glide.with(AiAssistFragment.this)
+                        .load(profileImageUrl)
+                        .placeholder(R.drawable.user)  // Optional placeholder
+                        .into(circularImageView);
+            } else {
+                circularImageView.setImageResource(R.drawable.user);  // Default user image
+            }
+        } else {
+            // User signed in through registration and survey, load data from Firebase
+            DatabaseReference surveyReference = FirebaseDatabase.getInstance().getReference("surveys");
+
+            surveyReference.orderByChild("userId").equalTo(userId).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        for (DataSnapshot surveySnapshot : snapshot.getChildren()) {
+                            // Get the full name from the survey node
+                            String fullName = surveySnapshot.child("name").getValue(String.class);
+                            if (fullName != null) {
+                                user_name_txtVw.setText("Hey, " + fullName);
+                            } else {
+                                user_name_txtVw.setText("Hey, User");
+                            }
+                        }
+                    } else {
+                        Log.e("FirebaseError", "Survey data not found");
+                        user_name_txtVw.setText("Hey, User");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("FirebaseError", "Error fetching survey data", error.toException());
+                }
+            });
+
+            // Reference to users node for the profile image URL
+            DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
+            // Listen for changes in user profile image URL
+            userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        // Get profile image URL
+                        String profileImageUrl = snapshot.child("profileImageUrl").getValue(String.class);
+
+                        // Load profile image into CircularImageView using Glide
+                        if (profileImageUrl != null) {
+                            Glide.with(AiAssistFragment.this)
+                                    .load(profileImageUrl)
+                                    .placeholder(R.drawable.user)  // Optional placeholder
+                                    .into(circularImageView);
+                        } else {
+                            circularImageView.setImageResource(R.drawable.user);  // Default user image
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("FirebaseError", "Error fetching user data", error.toException());
+                }
+            });
+        }
     }
+
+
+
+
 
     private void redirectToLogin() {
         SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
@@ -319,4 +408,29 @@ public class HomeFragment extends Fragment implements ReminderDialogFragment.Rem
         startActivity(intent);
         requireActivity().finish();
     }
+
+
+    private void logout() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+        // Revoke OAuth access
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.web_client_id))
+                .requestEmail()
+                .build();
+
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
+
+        // Sign out from Firebase
+        mAuth.signOut();
+
+        // Sign out and revoke access from Google
+        googleSignInClient.signOut().addOnCompleteListener(task -> {
+            googleSignInClient.revokeAccess().addOnCompleteListener(task1 -> {
+                // Clear any cached preferences related to login
+                redirectToLogin();
+            });
+        });
+    }
+
 }

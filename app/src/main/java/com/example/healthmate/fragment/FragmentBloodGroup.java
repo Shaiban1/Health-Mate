@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.example.healthmate.R;
 import com.example.healthmate.activities.SurveyScreen;
-import com.example.healthmate.models.User;
+
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.database.DatabaseReference;
