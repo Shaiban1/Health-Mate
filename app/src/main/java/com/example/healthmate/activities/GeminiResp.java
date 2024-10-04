@@ -34,7 +34,9 @@ public class GeminiResp {
             @Override
             public void onSuccess(GenerateContentResponse result) {
                 String resultText = result.getText();
+                String cleanedResponse = resultText.replace("*"," ");
                 callback.onResponse(result.getText());
+
 
             }
 

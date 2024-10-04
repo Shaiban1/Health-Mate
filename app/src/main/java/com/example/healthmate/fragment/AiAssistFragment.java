@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.example.healthmate.R;
 import com.example.healthmate.activities.AiChatActivity;
 import com.example.healthmate.activities.LoginActivity;
+import com.example.healthmate.activities.menudialog;
 import com.example.healthmate.adapters.ReminderAdapter;
 import com.example.healthmate.filesImp.AlarmManagerHelper;
 import com.example.healthmate.filesImp.ReminderViewModel;
@@ -131,6 +132,20 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
             });
         }
 
+        // Define menuDialog once
+        menudialog menuDialog = new menudialog();
+
+        circularImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getChildFragmentManager().findFragmentByTag("menuDialog") == null) {
+                    // Show the dialog only if it's not already displayed
+                    menuDialog.show(getChildFragmentManager(), "menuDialog");
+                }
+            }
+        });
+
+
         // Handle FAB click
         fab.setOnClickListener(v -> openReminderDialog());
 
@@ -146,10 +161,7 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
             isExpanded = !isExpanded;
         });
 
-        // Handle logout button click
-        logout_button.setOnClickListener(v -> {
-            logout();
-        });
+
 
         chatActionButton.setOnClickListener(view1 -> {
             circularRevealAnimation(view);
@@ -410,27 +422,5 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
     }
 
 
-    private void logout() {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
-        // Revoke OAuth access
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.web_client_id))
-                .requestEmail()
-                .build();
-
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
-
-        // Sign out from Firebase
-        mAuth.signOut();
-
-        // Sign out and revoke access from Google
-        googleSignInClient.signOut().addOnCompleteListener(task -> {
-            googleSignInClient.revokeAccess().addOnCompleteListener(task1 -> {
-                // Clear any cached preferences related to login
-                redirectToLogin();
-            });
-        });
-    }
 
 }
