@@ -421,7 +421,7 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
 
 
     private void loadUserData(String userId) {
-
+        // Initialize Firebase Auth
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -430,82 +430,53 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
             return;
         }
 
-        boolean isGoogleSignIn = false;
-
-        // Check if the user signed in with Google
-        for (com.google.firebase.auth.UserInfo profile : user.getProviderData()) {
-            if (profile.getProviderId().equals("google.com")) {
-                isGoogleSignIn = true;
-                break;
-            }
-        }
-
-        if (isGoogleSignIn) {
-            // Use Google profile data if available
-            String displayName = user.getDisplayName();
-            Uri profileImageUrl = user.getPhotoUrl();
-
-            user_name_txtVw.setText(displayName != null ? "Hey, " + displayName : "Hey, User");
-
-            if (profileImageUrl != null) {
-                Glide.with(this)
-                        .load(profileImageUrl)
-                        .placeholder(R.drawable.user)
-                        .into(circularImageView);
-            } else {
-                circularImageView.setImageResource(R.drawable.user); // Default user image
-            }
-        } else {
-            // Handle other sign-in methods if applicable
-            setDefaultUserData();
-        }
-
-        
-
-
-
         SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
-        String savedUsername = prefs.getString("username", "");
+        String savedUsername = prefs.getString("username", ""); // Load from SharedPreferences
         String savedProfileImageUrl = prefs.getString("profileImageUrl", "");
 
+        // Immediately display stored username and profile if available
         if (!savedUsername.isEmpty() && !savedProfileImageUrl.isEmpty()) {
             user_name_txtVw.setText(savedUsername);
             Glide.with(this)
                     .load(savedProfileImageUrl)
-                    .placeholder(R.drawable.user) // Placeholder image
-                    .error(R.drawable.user) // Error image
-                    .circleCrop() // Crop image into a circular shape
+                    .placeholder(R.drawable.user)
+                    .circleCrop()
                     .into(circularImageView);
         }
 
-        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("users").child(userId).child("survey");
-
-        userReference.addValueEventListener(new ValueEventListener() {
+        // Fetch the latest data from Firebase
+        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String username = dataSnapshot.child("name").getValue(String.class);
                     String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue(String.class);
 
-                    user_name_txtVw.setText(username != null && !username.isEmpty() ? username : "User");
-
-                    if (profileImageUrl != null) {
-                        Glide.with(AiAssistFragment.this)
-                                .load(profileImageUrl)
-                                .placeholder(R.drawable.user) // Placeholder image
-                                .error(R.drawable.user) // Error image
-                                .circleCrop() // Crop image into a circular shape
-                                .into(circularImageView);
+                    if (username != null && !username.isEmpty()) {
+                        user_name_txtVw.setText(username);
                     } else {
-                        circularImageView.setImageResource(R.drawable.user); // Default user image
+                        user_name_txtVw.setText("User");
                     }
 
-                    // Save the username and profile picture URL to SharedPreferences
+                    // Load profile picture
+                    if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                        Glide.with(AiAssistFragment.this)
+                                .load(profileImageUrl)
+                                .placeholder(R.drawable.user)
+                                .circleCrop()
+                                .into(circularImageView);
+                    } else {
+                        circularImageView.setImageResource(R.drawable.user); // Default image
+                    }
+
+                    // Save updated values to SharedPreferences
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("username", username);
                     editor.putString("profileImageUrl", profileImageUrl);
                     editor.apply();
                 } else {
+                    // No data exists, fall back to default
                     setDefaultUserData();
                 }
             }
@@ -517,6 +488,12 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
             }
         });
     }
+
+    private void setDefaultUserData() {
+        user_name_txtVw.setText("User not found");
+        circularImageView.setImageResource(R.drawable.user); // Default image
+    }
+
     private void updateUserUI(User user) {
         String username = user.getName();
         String profileImageUrl = user.getProfileImageUrl();
@@ -531,10 +508,7 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
                 .into(circularImageView);
     }
 
-    private void setDefaultUserData() {
-        user_name_txtVw.setText("User not found");
-        circularImageView.setImageResource(R.drawable.user); // Default user image
-    }
+
 
 
 
