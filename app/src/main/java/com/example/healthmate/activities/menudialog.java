@@ -45,7 +45,6 @@ public class menudialog extends DialogFragment {
         menuEmail = view.findViewById(R.id.menu_email);
         menuPhone = view.findViewById(R.id.menu_phone);
         menuAge = view.findViewById(R.id.menu_age);
-        menuGender = view.findViewById(R.id.menu_gender);
         menuBloodGroup = view.findViewById(R.id.menu_blood_group);
         menuLifestyle = view.findViewById(R.id.menu_lifestyle);
         menuEditIcon = view.findViewById(R.id.menu_edit_icon);
@@ -62,7 +61,6 @@ public class menudialog extends DialogFragment {
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String phone = dataSnapshot.child("phone").getValue(String.class);
                     String ageGroup = dataSnapshot.child("ageGroup").getValue(String.class);
-                    String gender = dataSnapshot.child("gender").getValue(String.class);
                     String bloodGroup = dataSnapshot.child("bloodGroup").getValue(String.class);
                     String lifestyle = dataSnapshot.child("lifestyle").getValue(String.class);
 
@@ -71,7 +69,6 @@ public class menudialog extends DialogFragment {
                     menuEmail.setText(email != null ? email : "N/A");
                     menuPhone.setText(phone != null ? phone : "N/A");
                     menuAge.setText(ageGroup != null ? ageGroup : "N/A");
-                    menuGender.setText(gender != null ? gender : "N/A");
                     menuBloodGroup.setText(bloodGroup != null ? bloodGroup : "N/A");
                     menuLifestyle.setText(lifestyle != null ? lifestyle : "N/A");
                 }
@@ -100,25 +97,36 @@ public class menudialog extends DialogFragment {
 
                 // Google sign-out setup
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.web_client_id))
+                        .requestIdToken(getString(R.string.web_client_id))  // Ensure this is correct
                         .requestEmail()
                         .build();
 
                 GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
 
-                // Sign out from Firebase and Google
+                // First, sign out from Firebase
                 mAuth.signOut();
+
+                // Then sign out from Google
                 googleSignInClient.signOut().addOnCompleteListener(task -> {
-                    googleSignInClient.revokeAccess().addOnCompleteListener(task1 -> {
-                        if (task.isSuccessful() && task1.isSuccessful()) {
-                            redirectToLogin();
-                        } else {
-                            // Handle failures here (optional)
-                        }
-                    });
+                    if (task.isSuccessful()) {
+                        // Revoke access (optional, you can handle this later or separately)
+                        googleSignInClient.revokeAccess().addOnCompleteListener(revokeTask -> {
+                            if (revokeTask.isSuccessful()) {
+                                // Redirect to the login screen after successful logout and access revocation
+                                redirectToLogin();
+                            } else {
+                                // Handle failure of revoking access (optional)
+                                redirectToLogin();  // Optionally, proceed to login screen even if revoke failed
+                            }
+                        });
+                    } else {
+                        // Handle failure of Google sign-out (optional)
+                        redirectToLogin();  // Proceed to login screen even if sign-out failed
+                    }
                 });
             }
         });
+
 
         return view;
     }

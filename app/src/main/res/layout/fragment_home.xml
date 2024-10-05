@@ -55,13 +55,28 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/logout_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="@{viewModel::onLogoutClick}"
-                    android:text="@string/logout_button_main" />
             </LinearLayout>
+
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profile_section" />
+
+            <!-- TabLayout for indicator -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:tabIndicatorColor="@color/logo_color"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/viewPager" />
 
             <!-- Expandable Card -->
             <include
@@ -73,8 +88,7 @@
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_section"
-                app:layout_constraintBottom_toTopOf="@+id/ai_chat_card" />
+                app:layout_constraintTop_toBottomOf="@id/tabLayout" />
 
             <!-- AI Chat Card -->
 
@@ -91,18 +105,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_section"
+                app:layout_constraintTop_toBottomOf="@+id/expandable_card"
                 app:layout_constraintVertical_bias="0.3">
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/id_anim_meta"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginStart="6dp"
-                    app:lottie_rawRes="@raw/metaanim"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    app:lottie_autoPlay="true"
                     app:lottie_loop="true"
-                    app:lottie_autoPlay="true"/>
+                    app:lottie_rawRes="@raw/metaanim" />
 
                 <TextView
                     android:id="@+id/chat_suggestion_text"

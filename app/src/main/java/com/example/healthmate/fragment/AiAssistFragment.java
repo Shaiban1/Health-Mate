@@ -1,8 +1,9 @@
 package com.example.healthmate.fragment;
 
+import static android.content.ContentValues.TAG;
+
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.app.AlarmManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,8 +17,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,14 +40,16 @@ import com.example.healthmate.activities.AiChatActivity;
 import com.example.healthmate.activities.LoginActivity;
 import com.example.healthmate.activities.menudialog;
 import com.example.healthmate.adapters.ReminderAdapter;
+import com.example.healthmate.adapters.SliderAdapter;
 import com.example.healthmate.filesImp.AlarmManagerHelper;
 import com.example.healthmate.filesImp.ReminderViewModel;
 import com.example.healthmate.filesImp.ReminderViewModelFactory;
+import com.example.healthmate.interfaces.TimeDifferenceCallback;
 import com.example.healthmate.models.Reminder;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.example.healthmate.models.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -60,17 +65,19 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
-public class AiAssistFragment extends Fragment implements ReminderDialogFragment.ReminderDialogListener {
+public class AiAssistFragment extends Fragment implements TimeDifferenceCallback, ReminderDialogFragment.ReminderDialogListener {
 
     private CircularImageView circularImageView;
     private TextView user_name_txtVw;
-    private Button logout_button;
     private RecyclerView remindersRecyclerView;
     private ImageView expandButton;
     private ReminderAdapter adapter;
@@ -81,6 +88,15 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
     private ArrayList<String> suggestions;
     private int currentIndex = 0;
     private LottieAnimationView animationView;
+    private ViewPager2 viewPager;
+    private TabLayout tabLayout;
+    private SliderAdapter sliderAdapter;
+    private int currentSlideIndex = 0;
+    private final int SLIDER_DELAY = 3000; // 3 seconds delay for auto slide
+    private Handler sliderHandler;
+
+    private int[] sliderImages = {R.drawable.doct1, R.drawable.dcot2, R.drawable.doct3, R.drawable.doct4};
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,7 +105,6 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         circularImageView = view.findViewById(R.id.profile_image);
         user_name_txtVw = view.findViewById(R.id.username_main);
-        logout_button = view.findViewById(R.id.logout_button);
         remindersRecyclerView = view.findViewById(R.id.remindersRecyclerView);
         expandButton = view.findViewById(R.id.expandButton);
         chatSuggestionText = view.findViewById(R.id.chat_suggestion_text);
@@ -98,6 +113,15 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
 
         animationView.setAnimation(R.raw.metaanim);
         animationView.playAnimation();
+
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            loadUserData(userId);  // Fetch and display user data (username and profile picture)
+        } else {
+            redirectToLogin();
+        }
 
         // List of AI suggestions
         suggestions = new ArrayList<>();
@@ -119,18 +143,16 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
         if (reminderViewModel != null) {
             // Initialize RecyclerView and Adapter
             remindersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            adapter = new ReminderAdapter(reminderViewModel);
+            adapter = new ReminderAdapter(reminderViewModel, this); // Pass this fragment as the TimeDifferenceCallback
             remindersRecyclerView.setAdapter(adapter);
 
             reminderViewModel.getAllRemindersPaged().observe(getViewLifecycleOwner(), pagedList -> {
                 if (pagedList != null) {
                     adapter.submitList(pagedList);
-                } else {
-                    // Handle the case where the list is empty or null
-                    // You can show an error message, a loading indicator, or a default state
                 }
             });
         }
+
 
         // Define menuDialog once
         menudialog menuDialog = new menudialog();
@@ -167,16 +189,106 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
             circularRevealAnimation(view);
         });
 
-        // Update UI with Firebase user data
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
-            loadUserData(userId);
+
+        TextView usernameTextView = view.findViewById(R.id.username_main);
+
+        // Fetch user details from Firebase
+        FirebaseUser curruser = FirebaseAuth.getInstance().getCurrentUser();
+        if (curruser != null) {
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String username = dataSnapshot.child("name").getValue(String.class);
+
+                    // Safely set the username or show a placeholder if null
+                    usernameTextView.setText(username != null ? username : "Unknown");
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Handle errors here (e.g., log the error)
+                    usernameTextView.setText("Error loading username");
+                }
+            });
         } else {
-            redirectToLogin();
+            // Handle the case where the user is not logged in
+            usernameTextView.setText("Guest");
         }
 
+
+        viewPager = view.findViewById(R.id.viewPager);
+        tabLayout = view.findViewById(R.id.tabLayout);
+
+        SliderAdapter sliderAdapter = new SliderAdapter(getContext(), sliderImages);
+        viewPager.setAdapter(sliderAdapter);
+
+        // Link TabLayout with ViewPager2
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            // This can be left empty since we are just using the tabs as indicators
+        }).attach();
+
+
+        sliderHandler = new Handler(Looper.getMainLooper());
+
+        // Start the auto-slide
+        startAutoSlide();
+
+
+
         return view;
+    }
+
+    private void startAutoSlide() {
+        sliderHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                currentSlideIndex++;
+                if (currentSlideIndex >= sliderImages.length) {
+                    currentSlideIndex = 0;
+                }
+
+                viewPager.setCurrentItem(currentSlideIndex, true); // True for smooth animation
+
+                // Call this method again after a delay for the next slide
+                sliderHandler.postDelayed(this, SLIDER_DELAY);
+            }
+        }, SLIDER_DELAY);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Remove any pending posts of sliderHandler to avoid memory leaks
+        sliderHandler.removeCallbacksAndMessages(null);
+    }
+
+
+
+
+
+    private void updateReminderTimes() {
+        new Handler().postDelayed(() -> {
+            for (int i = 0; i < remindersRecyclerView.getChildCount(); i++) {
+                View itemView = remindersRecyclerView.getChildAt(i);
+                TextView reminderTimeTextView = itemView.findViewById(R.id.reminderTime);
+                TextView timeRemainingTextView = itemView.findViewById(R.id.time_remaining);
+
+                // Get the reminder time string
+                String reminderTimeString = reminderTimeTextView.getText().toString();
+
+                // Calculate and update time remaining
+                onCalculateTimeDifference(timeRemainingTextView, reminderTimeString);
+            }
+            // Update the times every minute
+            updateReminderTimes();
+        }, 60000);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateReminderTimes(); // Start updating reminder times on fragment start
     }
 
 
@@ -307,7 +419,9 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
     }
 
 
+
     private void loadUserData(String userId) {
+        // Initialize Firebase Auth
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -316,95 +430,86 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
             return;
         }
 
-        boolean isGoogleSignIn = false;
+        SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
+        String savedUsername = prefs.getString("username", ""); // Load from SharedPreferences
+        String savedProfileImageUrl = prefs.getString("profileImageUrl", "");
 
-        // Check if the user signed in with Google
-        for (com.google.firebase.auth.UserInfo profile : user.getProviderData()) {
-            if (profile.getProviderId().equals("google.com")) {
-                isGoogleSignIn = true;
-                break;
-            }
+        // Immediately display stored username and profile if available
+        if (!savedUsername.isEmpty() && !savedProfileImageUrl.isEmpty()) {
+            user_name_txtVw.setText(savedUsername);
+            Glide.with(this)
+                    .load(savedProfileImageUrl)
+                    .placeholder(R.drawable.user)
+                    .circleCrop()
+                    .into(circularImageView);
         }
 
-        if (isGoogleSignIn) {
-            // User signed in with Google, so get Google profile information
-            String displayName = user.getDisplayName();
-            Uri profileImageUrl = user.getPhotoUrl();
+        // Fetch the latest data from Firebase
+        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String username = dataSnapshot.child("name").getValue(String.class);
+                    String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue(String.class);
 
-            if (displayName != null) {
-                user_name_txtVw.setText("Hey, " + displayName);
-            } else {
-                user_name_txtVw.setText("Hey, User");
-            }
-
-            if (profileImageUrl != null) {
-                // Load profile image using Glide
-                Glide.with(AiAssistFragment.this)
-                        .load(profileImageUrl)
-                        .placeholder(R.drawable.user)  // Optional placeholder
-                        .into(circularImageView);
-            } else {
-                circularImageView.setImageResource(R.drawable.user);  // Default user image
-            }
-        } else {
-            // User signed in through registration and survey, load data from Firebase
-            DatabaseReference surveyReference = FirebaseDatabase.getInstance().getReference("surveys");
-
-            surveyReference.orderByChild("userId").equalTo(userId).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        for (DataSnapshot surveySnapshot : snapshot.getChildren()) {
-                            // Get the full name from the survey node
-                            String fullName = surveySnapshot.child("name").getValue(String.class);
-                            if (fullName != null) {
-                                user_name_txtVw.setText("Hey, " + fullName);
-                            } else {
-                                user_name_txtVw.setText("Hey, User");
-                            }
-                        }
+                    if (username != null && !username.isEmpty()) {
+                        user_name_txtVw.setText(username);
                     } else {
-                        Log.e("FirebaseError", "Survey data not found");
-                        user_name_txtVw.setText("Hey, User");
+                        user_name_txtVw.setText("User");
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("FirebaseError", "Error fetching survey data", error.toException());
-                }
-            });
-
-            // Reference to users node for the profile image URL
-            DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
-
-            // Listen for changes in user profile image URL
-            userReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        // Get profile image URL
-                        String profileImageUrl = snapshot.child("profileImageUrl").getValue(String.class);
-
-                        // Load profile image into CircularImageView using Glide
-                        if (profileImageUrl != null) {
-                            Glide.with(AiAssistFragment.this)
-                                    .load(profileImageUrl)
-                                    .placeholder(R.drawable.user)  // Optional placeholder
-                                    .into(circularImageView);
-                        } else {
-                            circularImageView.setImageResource(R.drawable.user);  // Default user image
-                        }
+                    // Load profile picture
+                    if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                        Glide.with(AiAssistFragment.this)
+                                .load(profileImageUrl)
+                                .placeholder(R.drawable.user)
+                                .circleCrop()
+                                .into(circularImageView);
+                    } else {
+                        circularImageView.setImageResource(R.drawable.user); // Default image
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("FirebaseError", "Error fetching user data", error.toException());
+                    // Save updated values to SharedPreferences
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("username", username);
+                    editor.putString("profileImageUrl", profileImageUrl);
+                    editor.apply();
+                } else {
+                    // No data exists, fall back to default
+                    setDefaultUserData();
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "Error fetching user data: " + databaseError.getMessage());
+                setDefaultUserData();
+            }
+        });
     }
+
+    private void setDefaultUserData() {
+        user_name_txtVw.setText("User not found");
+        circularImageView.setImageResource(R.drawable.user); // Default image
+    }
+
+    private void updateUserUI(User user) {
+        String username = user.getName();
+        String profileImageUrl = user.getProfileImageUrl();
+
+        user_name_txtVw.setText(username != null && !username.isEmpty() ? username : "User");
+
+        Glide.with(this)
+                .load(profileImageUrl)
+                .placeholder(R.drawable.user) // Placeholder image
+                .error(R.drawable.user) // Error image
+                .circleCrop() // Crop image into a circular shape
+                .into(circularImageView);
+    }
+
+
+
 
 
 
@@ -422,5 +527,36 @@ public class AiAssistFragment extends Fragment implements ReminderDialogFragment
     }
 
 
+    @Override
+    public void onCalculateTimeDifference(TextView timeRemainingTextView, String reminderTimeString) {
+        try {
+            // Extract the actual time from the string (assume "Time: " is a fixed prefix)
+            String timeOnly = reminderTimeString.replace("Time: ", "").trim();
+
+            // DateTimeFormatter to parse time in AM/PM format
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+
+            // Parse the reminder time
+            LocalTime reminderTime = LocalTime.parse(timeOnly, formatter);
+
+            // Get current time in India
+            LocalTime currentTime = LocalTime.now(ZoneId.of("Asia/Kolkata"));
+
+            // Calculate the time difference
+            long hoursDifference = ChronoUnit.HOURS.between(currentTime, reminderTime);
+            long minutesDifference = ChronoUnit.MINUTES.between(currentTime, reminderTime) % 60;
+
+            // Update the TextView to show the time remaining
+            if (hoursDifference > 0 || minutesDifference > 0) {
+                String timeRemaining = String.format(Locale.ENGLISH, "Alarm in %d hr %d min", hoursDifference, minutesDifference);
+                timeRemainingTextView.setText(timeRemaining);
+            } else {
+                timeRemainingTextView.setText("Alarm is due!");
+            }
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+            timeRemainingTextView.setText("Invalid time format!");
+        }
+    }
 
 }
