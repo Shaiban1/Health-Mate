@@ -44,14 +44,7 @@
             android:textSize="14sp" />
 
 
-        <TextView
-            android:id="@+id/time_remaining"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:text="."
-            android:textColor="@android:color/holo_red_dark"
-            android:layout_below="@id/reminderTime" />
+
 
         <ImageButton
             android:id="@+id/delete_reminder"
@@ -68,8 +61,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tuesday"
-            android:layout_below="@id/time_remaining"
+            android:layout_below="@id/reminderTime"
             android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/time_remaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="."
+            android:textColor="@android:color/holo_red_dark"
+            android:layout_below="@id/reminderDay" />
 
 
     </RelativeLayout>

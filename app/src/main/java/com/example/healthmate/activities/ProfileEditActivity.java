@@ -1,116 +1,101 @@
 package com.example.healthmate.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.healthmate.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ProfileEditActivity extends AppCompatActivity {
 
-    private LinearLayout personalDetailsSection, contactDetailsSection, lifestyleSection;
-    private Button nextButton, previousButton, saveButton;
-    private int currentSection = 0; // Track the current visible section
+    private EditText editName, editEmail, editPhone, editAge, editGender, editBloodGroup, editLifestyle;
+    private Button saveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_edit);
 
-        personalDetailsSection = findViewById(R.id.personal_details_section);
-        contactDetailsSection = findViewById(R.id.contact_details_section);
-        lifestyleSection = findViewById(R.id.lifestyle_section);
-
-        nextButton = findViewById(R.id.next_button);
-        previousButton = findViewById(R.id.previous_button);
+        // Initialize UI components
+        editName = findViewById(R.id.edit_name);
+        editEmail = findViewById(R.id.edit_email);
+        editPhone = findViewById(R.id.edit_phone);
+        editAge = findViewById(R.id.edit_age);
+        editBloodGroup = findViewById(R.id.edit_blood_group);
+        editLifestyle = findViewById(R.id.edit_lifestyle);
         saveButton = findViewById(R.id.save_button);
 
-        // Set up button listeners
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showNextSection();
-            }
-        });
+        // Fetch user details from Firebase
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String username = dataSnapshot.child("name").getValue(String.class);
+                    String email = dataSnapshot.child("email").getValue(String.class);
+                    String phone = dataSnapshot.child("phone").getValue(String.class);
+                    String ageGroup = dataSnapshot.child("ageGroup").getValue(String.class);
+                    String gender = dataSnapshot.child("gender").getValue(String.class);
+                    String bloodGroup = dataSnapshot.child("bloodGroup").getValue(String.class);
+                    String lifestyle = dataSnapshot.child("lifestyle").getValue(String.class);
 
-        previousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPreviousSection();
-            }
-        });
+                    // Pre-fill data in the fields
+                    editName.setText(username);
+                    editEmail.setText(email);
+                    editPhone.setText(phone);
+                    editAge.setText(ageGroup);
+                    editGender.setText(gender);
+                    editBloodGroup.setText(bloodGroup);
+                    editLifestyle.setText(lifestyle);
+                }
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveProfileChanges();
-            }
-        });
-
-        // Initial section setup
-        updateSectionVisibility();
-    }
-
-    private void showNextSection() {
-        if (currentSection < 2) { // Assuming 3 sections
-            currentSection++;
-            updateSectionVisibility();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(ProfileEditActivity.this, "Error fetching data", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
-    }
 
-    private void showPreviousSection() {
-        if (currentSection > 0) {
-            currentSection--;
-            updateSectionVisibility();
-        }
-    }
-
-    private void updateSectionVisibility() {
-        personalDetailsSection.setVisibility(currentSection == 0 ? View.VISIBLE : View.GONE);
-        contactDetailsSection.setVisibility(currentSection == 1 ? View.VISIBLE : View.GONE);
-        lifestyleSection.setVisibility(currentSection == 2 ? View.VISIBLE : View.GONE);
-
-        previousButton.setVisibility(currentSection == 0 ? View.GONE : View.VISIBLE);
-        nextButton.setVisibility(currentSection == 2 ? View.GONE : View.VISIBLE);
-        saveButton.setVisibility(currentSection == 2 ? View.VISIBLE : View.GONE);
+        // Save button click listener
+        saveButton.setOnClickListener(v -> saveProfileChanges());
     }
 
     private void saveProfileChanges() {
-        // Collect and save data from all sections
-        String name = ((EditText) findViewById(R.id.edit_name)).getText().toString();
-        String age = ((EditText) findViewById(R.id.edit_age)).getText().toString();
-        String email = ((EditText) findViewById(R.id.edit_email)).getText().toString();
-        String phone = ((EditText) findViewById(R.id.edit_phone)).getText().toString();
-        String lifestyle = ((EditText) findViewById(R.id.edit_lifestyle)).getText().toString();
+        String name = editName.getText().toString();
+        String email = editEmail.getText().toString();
+        String phone = editPhone.getText().toString();
+        String age = editAge.getText().toString();
+        String gender = editGender.getText().toString();
+        String bloodGroup = editBloodGroup.getText().toString();
+        String lifestyle = editLifestyle.getText().toString();
 
-        // Perform validation if needed
-        if (name.isEmpty() || age.isEmpty() || email.isEmpty() || phone.isEmpty() || lifestyle.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || age.isEmpty() || gender.isEmpty() || bloodGroup.isEmpty() || lifestyle.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Implement saving changes logic (e.g., update Firebase)
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
             userRef.child("name").setValue(name);
-            userRef.child("age").setValue(age);
             userRef.child("email").setValue(email);
             userRef.child("phone").setValue(phone);
+            userRef.child("ageGroup").setValue(age);
+            userRef.child("gender").setValue(gender);
+            userRef.child("bloodGroup").setValue(bloodGroup);
             userRef.child("lifestyle").setValue(lifestyle);
 
             Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-            finish(); // Close the activity
-        } else {
-            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show();
+            finish(); // Close the activity after saving
         }
     }
 }
