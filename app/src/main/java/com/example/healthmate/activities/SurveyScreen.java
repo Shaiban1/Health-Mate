@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -30,7 +29,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,7 +131,7 @@ public class SurveyScreen extends AppCompatActivity {
 
         if (user != null) {
             DatabaseReference userSurveyRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users").child(user.getUid()).child("surveys");
+                    .child("users").child(user.getUid());
 
             // Create a map for the survey data
             Map<String, Object> surveyData = new HashMap<>();
@@ -148,7 +146,7 @@ public class SurveyScreen extends AppCompatActivity {
             }
 
             // Push the survey data to Firebase Database
-            userSurveyRef.push().setValue(surveyData).addOnCompleteListener(task -> {
+            userSurveyRef.setValue(surveyData).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(SurveyScreen.this, "Survey submitted successfully!", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(SurveyScreen.this, MainActivity.class));
@@ -163,7 +161,6 @@ public class SurveyScreen extends AppCompatActivity {
             Toast.makeText(this, "User is not authenticated. Please sign in to submit the survey.", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void uploadImageToFirebase(Uri imageUri, String uid) {
         if (imageUri != null) {
@@ -198,6 +195,5 @@ public class SurveyScreen extends AppCompatActivity {
                 }
             });
         }
-
     }
 }
