@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    tools:context=".fragment.AiAssistFragment">
 
-    <ScrollView
+    <!-- Background Image positioned behind everything -->
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="615dp"
+        android:src="@drawable/background_image"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true" />
+
+    <!-- Scrollable content on top of the background image -->
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".fragment.AiAssistFragment">
+            android:background="@android:color/transparent"> <!-- Ensure transparent background -->
 
             <!-- Profile Section -->
             <LinearLayout
@@ -33,7 +42,9 @@
                     android:id="@+id/profile_image"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:src="@drawable/user" />
+                    android:layout_marginTop="40dp"
+                    android:src="@drawable/user"
+                    app:civ_border="false" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -46,72 +57,81 @@
                         android:id="@+id/username_main"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="username"
-                        android:layout_marginTop="16dp"
-                        android:textColor="@android:color/black"
+                        android:layout_marginTop="56dp"
+                        android:text="Guest"
+                        android:textColor="@android:color/white"
                         android:textSize="18sp" />
 
-
-
                 </LinearLayout>
-
             </LinearLayout>
 
-
+            <!-- ViewPager and TabLayout -->
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_marginTop="16dp"
+                android:layout_margin="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profile_section" />
 
-            <!-- TabLayout for indicator -->
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:tabIndicatorColor="@color/logo_color"
+                android:layout_height="20dp"
+                android:background="@drawable/flag_transparent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/viewPager" />
+                app:layout_constraintTop_toBottomOf="@id/viewPager"
+                app:tabIndicatorColor="@color/white" />
 
-            <!-- Expandable Card -->
-            <include
-                android:id="@+id/expandable_card"
-                layout="@layout/expandable_card"
-                android:layout_width="0dp"
+            <ProgressBar
+                android:id="@+id/loading_progress"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:padding="16dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tabLayout" />
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- AI Chat Card -->
 
+            <TextView
+                android:id="@+id/medical_question_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppin_regular"
+                android:text="Ask any medical or \n health question"
+                android:textColor="@color/white"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/ai_chat_card"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tabLayout"
+                app:layout_constraintHorizontal_bias="0.5" />
+
+            <!-- AI Chat Card (Now placed above expandable card) -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/ai_chat_card"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 android:elevation="8dp"
                 android:padding="14dp"
                 app:cardCornerRadius="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expandable_card"
-                app:layout_constraintVertical_bias="0.3">
+                app:layout_constraintTop_toBottomOf="@id/medical_question_text"
+                app:layout_constraintVertical_bias="0.0">
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/id_anim_meta"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     app:lottie_autoPlay="true"
@@ -123,7 +143,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="17dp"
                     android:gravity="center"
                     android:text="AI Chat"
                     android:textColor="@color/dark_grey"
@@ -131,8 +151,8 @@
 
                 <ImageButton
                     android:id="@+id/chat_action_button"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="bottom|end"
                     android:layout_margin="8dp"
                     android:background="@drawable/ripple_oval"
@@ -140,12 +160,23 @@
                     android:src="@drawable/baseline_send_24" />
             </androidx.cardview.widget.CardView>
 
-
+            <!-- Expandable Card (Now below chat card) -->
+            <include
+                android:id="@+id/expandable_card"
+                layout="@layout/expandable_card"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ai_chat_card" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </ScrollView>
 
-
+    <!-- Floating Action Button (FAB) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_home"
         android:layout_width="wrap_content"
@@ -156,11 +187,7 @@
         android:elevation="8dp"
         android:src="@drawable/baseline_add_24"
         android:tint="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.954"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.918" />
-    <!-- Floating Action Button (FAB) -->
-</LinearLayout>
+        app:layout_anchor="@id/scrollView"
+        app:layout_anchorGravity="bottom|end" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

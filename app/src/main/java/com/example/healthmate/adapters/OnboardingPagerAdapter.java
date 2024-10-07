@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.viewpager.widget.PagerAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
+public class OnboardingPagerAdapter extends RecyclerView.Adapter<OnboardingPagerAdapter.OnboardingViewHolder> {
 
-public class OnboardingPagerAdapter extends PagerAdapter {
     private final Context context;
     private final int[] layouts;
 
@@ -20,26 +20,34 @@ public class OnboardingPagerAdapter extends PagerAdapter {
 
     @NonNull
     @Override
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(layouts[position], container, false);
-        container.addView(view);
-        return view;
+    public OnboardingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate the layout based on position (viewType is used here)
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(layouts[viewType], parent, false);
+        return new OnboardingViewHolder(view);
     }
 
     @Override
-    public int getCount() {
+    public void onBindViewHolder(@NonNull OnboardingViewHolder holder, int position) {
+        // No specific binding is necessary for static layouts
+    }
+
+    @Override
+    public int getItemCount() {
         return layouts.length;
     }
 
     @Override
-    public boolean isViewFromObject(@NonNull View view, @NonNull Object obj) {
-        return view == obj;
+    public int getItemViewType(int position) {
+        // The view type corresponds to the position, so each page uses a different layout
+        return position;
     }
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, @NonNull Object object) {
-        View view = (View) object;
-        container.removeView(view);
+    // ViewHolder class
+    static class OnboardingViewHolder extends RecyclerView.ViewHolder {
+        public OnboardingViewHolder(@NonNull View itemView) {
+            super(itemView);
+            // Initialize your view components if needed
+        }
     }
 }

@@ -13,9 +13,11 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import com.bumptech.glide.Glide;
 import com.example.healthmate.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,7 +34,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class menudialog extends DialogFragment {
 
     private CircleImageView menuProfileImage;
-    private TextView menuUsername, menuEmail, menuPhone, menuAge, menuGender, menuBloodGroup, menuLifestyle, logoutText;
+    private TextView menuUsername, menuEmail, menuPhone, menuAge, menuBloodGroup, menuLifestyle, logoutText;
     private ImageView menuEditIcon;
 
     @Override
@@ -53,80 +55,75 @@ public class menudialog extends DialogFragment {
         // Fetch user details from Firebase
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("survey");
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Retrieve all survey-related data
                     String username = dataSnapshot.child("name").getValue(String.class);
-                    String email = dataSnapshot.child("email").getValue(String.class);
-                    String phone = dataSnapshot.child("phone").getValue(String.class);
                     String ageGroup = dataSnapshot.child("ageGroup").getValue(String.class);
                     String bloodGroup = dataSnapshot.child("bloodGroup").getValue(String.class);
                     String lifestyle = dataSnapshot.child("lifestyle").getValue(String.class);
+                    String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue(String.class);  // Assuming the profile image URL is stored here
 
                     // Safely set the values or show placeholders if null
                     menuUsername.setText(username != null ? username : "Unknown");
-                    menuEmail.setText(email != null ? email : "N/A");
-                    menuPhone.setText(phone != null ? phone : "N/A");
                     menuAge.setText(ageGroup != null ? ageGroup : "N/A");
                     menuBloodGroup.setText(bloodGroup != null ? bloodGroup : "N/A");
                     menuLifestyle.setText(lifestyle != null ? lifestyle : "N/A");
+
+                    // Load profile image if available
+                    if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                        Glide.with(requireContext())
+                                .load(profileImageUrl)
+                                .placeholder(R.drawable.user) // Replace with your default image resource
+                                .into(menuProfileImage);
+                    }
+
+                    // Fetch email and phone from FirebaseAuth
+                    menuEmail.setText(user.getEmail() != null ? user.getEmail() : "N/A");
+                    menuPhone.setText(user.getPhoneNumber() != null ? user.getPhoneNumber() : "N/A");
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    // Handle errors here (e.g., log the error)
+                    Toast.makeText(requireContext(), "Failed to load user data", Toast.LENGTH_SHORT).show();
                 }
             });
         }
 
         // Edit profile listener
-        menuEditIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), com.example.healthmate.activities.ProfileEditActivity.class);
-                startActivity(intent);
-            }
+        menuEditIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), com.example.healthmate.activities.ProfileEditActivity.class);
+            startActivity(intent);
         });
 
         // Logout click listener
-        logoutText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        logoutText.setOnClickListener(v -> {
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-                // Google sign-out setup
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.web_client_id))  // Ensure this is correct
-                        .requestEmail()
-                        .build();
+            // Google sign-out setup
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.web_client_id))  // Ensure this is correct
+                    .requestEmail()
+                    .build();
 
-                GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
+            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
 
-                // First, sign out from Firebase
-                mAuth.signOut();
+            // First, sign out from Firebase
+            mAuth.signOut();
 
-                // Then sign out from Google
-                googleSignInClient.signOut().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Revoke access (optional, you can handle this later or separately)
-                        googleSignInClient.revokeAccess().addOnCompleteListener(revokeTask -> {
-                            if (revokeTask.isSuccessful()) {
-                                // Redirect to the login screen after successful logout and access revocation
-                                redirectToLogin();
-                            } else {
-                                // Handle failure of revoking access (optional)
-                                redirectToLogin();  // Optionally, proceed to login screen even if revoke failed
-                            }
-                        });
-                    } else {
-                        // Handle failure of Google sign-out (optional)
-                        redirectToLogin();  // Proceed to login screen even if sign-out failed
-                    }
-                });
-            }
+            // Then sign out from Google
+            googleSignInClient.signOut().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    googleSignInClient.revokeAccess().addOnCompleteListener(revokeTask -> {
+                        redirectToLogin();
+                    });
+                } else {
+                    redirectToLogin(); // Proceed to login screen even if sign-out failed
+                }
+            });
         });
-
 
         return view;
     }

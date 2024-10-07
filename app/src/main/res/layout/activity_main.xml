@@ -4,45 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Button Container -->
-    <LinearLayout
-        android:id="@+id/button_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="16dp"
-        android:layout_alignParentTop="true">
-
-        <!-- Ai Assist Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_flipkart"
-            style="@style/LoginButton"
-            android:background="@drawable/rounded_button_with_shadow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Ai Assist"
-            android:layout_marginEnd="16dp"
-            android:padding="6dp" />
-
-        <!-- Doctor's Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_grocery"
-            style="@style/LoginButton"
-            android:background="@drawable/rounded_button_with_shadow"
-            android:layout_width="0dp"
-            android:textColor="@color/white"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Doctor's"
-            android:padding="6dp" />
-    </LinearLayout>
-
     <!-- Fragment Container -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/button_container" />
+        android:layout_above="@id/bottom_navigation" />
+
+    <!-- Bottom Navigation View -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/CustomBottomNavigationView"
+        android:layout_alignParentBottom="true"
+        material:menu="@menu/bottom_nav_menu"
+        />
 </RelativeLayout>

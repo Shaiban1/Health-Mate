@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_ai_assist"
+        android:icon="@drawable/ic_home"
+        android:title="Ai Assist" />
+
+    <item
+        android:id="@+id/nav_doctor"
+        android:icon="@drawable/ic_diet"
+        android:title="Doctor's" />
+
+</menu>

@@ -66,14 +66,13 @@ dependencies {
     annotationProcessor (libs.room.compiler)
     implementation (libs.room.ktx)
     implementation ("it.xabaras.android:recyclerview-swipedecorator:1.4")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4") // For ViewModel with Kotlin extensions
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4") // For LiveData with Kotlin extensions
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
     implementation ("androidx.paging:paging-runtime:3.3.2")
     implementation ("androidx.viewpager2:viewpager2:1.1.0")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
-
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     implementation("com.google.guava:guava:32.1.3-android")
     implementation("org.reactivestreams:reactive-streams:1.0.4")

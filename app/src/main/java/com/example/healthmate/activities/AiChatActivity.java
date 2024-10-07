@@ -16,9 +16,10 @@ import com.example.healthmate.adapters.ChatAdapter;
 import com.example.healthmate.adapters.ChatMessage;
 import com.example.healthmate.interfaces.ResponseCallback;
 import com.google.ai.client.generativeai.java.ChatFutures;
-
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Looper;
+import android.text.TextUtils;
 
 
 public class AiChatActivity extends AppCompatActivity {
@@ -30,80 +31,101 @@ public class AiChatActivity extends AppCompatActivity {
     private List<ChatMessage> chatMessages;
     private ChatFutures chatModel;
     private LottieAnimationView loadingAnimationView;
-    private Handler handler = new Handler();
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ai_chat);
 
-        chatRecyclerView = findViewById(R.id.chat_recyclerview);
+        initViews();  // Initialize UI components
+        setupChat();  // Setup chat components
+
+        sendButton.setOnClickListener(v -> handleUserInput());
+    }
+
+    // Method to initialize UI components
+    private void initViews() {
         userInputEditText = findViewById(R.id.user_input_edittext);
         sendButton = findViewById(R.id.send_button);
+        chatRecyclerView = findViewById(R.id.chat_recyclerview);
         loadingAnimationView = findViewById(R.id.loading_animation);
+
         loadingAnimationView.setAnimation(R.raw.chat_loading);
         loadingAnimationView.playAnimation();
 
+        handler = new Handler(Looper.getMainLooper());  // Ensure using the main thread
+    }
+
+    // Method to set up the chat components
+    private void setupChat() {
         chatMessages = new ArrayList<>();
         chatAdapter = new ChatAdapter(chatMessages);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        chatRecyclerView.setLayoutManager(layoutManager);
+
+        chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         chatRecyclerView.setAdapter(chatAdapter);
 
-        // Assuming GeminiResp is handling chat model
+        // Initialize the chat model (assuming GeminiResp is a helper class)
         chatModel = GeminiResp.getChatModel().startChat();
+    }
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
+    // Handle user input when the send button is clicked
+    private void handleUserInput() {
+        String userInput = userInputEditText.getText().toString().trim();
+
+        if (TextUtils.isEmpty(userInput)) {
+            return;  // Avoid sending empty messages
+        }
+
+        addUserMessage(userInput);  // Add user's message to the chat
+        userInputEditText.setText("");  // Clear the input field
+
+        loadingAnimationView.setVisibility(View.VISIBLE);  // Show loading animation
+
+        // Request AI response asynchronously
+        GeminiResp.getResponse(chatModel, userInput, new ResponseCallback() {
             @Override
-            public void onClick(View v) {
-                loadingAnimationView.setVisibility(View.VISIBLE);
-                String userInput = userInputEditText.getText().toString();
+            public void onResponse(final String response) {
+                handler.postDelayed(() -> {
+                    loadingAnimationView.setVisibility(View.GONE);
+                    addAiMessage(response);  // Add AI response
+                }, 1000);  // 1-second delay
+            }
 
-                // Add User's message to the chat
-                addUserMessage(userInput);
-
-                // Clear input field
-                userInputEditText.setText("");
-
-                // Request AI's response with a callback
-                GeminiResp.getResponse(chatModel, userInput, new ResponseCallback() {
-                    @Override
-                    public void onResponse(final String response) {
-                        loadingAnimationView.setVisibility(View.GONE);
-
-                        // Delay before showing the AI's response
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                addAiMessage(response);  // Add AI response as a new message
-                            }
-                        }, 1000);  // 1-second delay before showing AI response
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        loadingAnimationView.setVisibility(View.GONE);
-                        throwable.printStackTrace();
-                    }
-                });
+            @Override
+            public void onError(Throwable throwable) {
+                loadingAnimationView.setVisibility(View.GONE);
+                throwable.printStackTrace();
             }
         });
     }
 
     // Method to add the user's message to the chat list
     private void addUserMessage(String userInput) {
-        ChatMessage userMessage = new ChatMessage(userInput, null);  // User message, AI response is null
+        ChatMessage userMessage = new ChatMessage(userInput, null);
         chatMessages.add(userMessage);
-        chatAdapter.notifyItemInserted(chatMessages.size() - 1);
-        chatRecyclerView.scrollToPosition(chatMessages.size() - 1);  // Scroll to the bottom
+        updateChat();
     }
 
     // Method to add the AI's message to the chat list
     private void addAiMessage(String aiResponse) {
-        ChatMessage aiMessage = new ChatMessage(null, aiResponse);  // AI response, User message is null
+        ChatMessage aiMessage = new ChatMessage(null, aiResponse);
         chatMessages.add(aiMessage);
+        updateChat();
+    }
+
+    // Common method to update the chat and scroll to the bottom
+    private void updateChat() {
         chatAdapter.notifyItemInserted(chatMessages.size() - 1);
-        chatRecyclerView.scrollToPosition(chatMessages.size() - 1);  // Scroll to the bottom
+        chatRecyclerView.scrollToPosition(chatMessages.size() - 1);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Clean up the handler to prevent memory leaks
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
     }
 }
-

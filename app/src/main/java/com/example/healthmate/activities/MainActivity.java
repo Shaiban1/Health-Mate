@@ -1,29 +1,39 @@
 package com.example.healthmate.activities;
 
+
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.healthmate.R;
+import com.example.healthmate.fragment.AiAssistFragment;
+import com.example.healthmate.fragment.DoctorsFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import com.example.healthmate.R;
-import com.example.healthmate.fragment.AiAssistFragment;
-import com.example.healthmate.fragment.DoctorsFragment;
+
+
 
 import java.util.Arrays;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,12 +42,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String DOCTORS_FRAGMENT_TAG = "DoctorsFragment";
     private String currentFragmentTag = AI_ASSIST_FRAGMENT_TAG;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Handle system bar insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -45,129 +54,115 @@ public class MainActivity extends AppCompatActivity {
         });
 
         requestPermissions();
+        Toast.makeText(MainActivity.this, "Permission is required", Toast.LENGTH_SHORT).show();
 
-        // Restore or initialize fragment
-        if (savedInstanceState == null) {
-            loadFragment(new AiAssistFragment(), AI_ASSIST_FRAGMENT_TAG);
-        } else {
-            currentFragmentTag = savedInstanceState.getString("currentFragmentTag", AI_ASSIST_FRAGMENT_TAG);
-        }
 
-        // Setup button listeners and styles
-        setupButtonListeners();
 
-    }
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
-    private void setupButtonListeners() {
-        Button flipkartButton = findViewById(R.id.button_flipkart);
-        Button groceryButton = findViewById(R.id.button_grocery);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);// Initialize here
 
-        flipkartButton.setOnClickListener(v -> {
-            if (!currentFragmentTag.equals(AI_ASSIST_FRAGMENT_TAG)) {
-                loadFragment(new AiAssistFragment(), AI_ASSIST_FRAGMENT_TAG);
-                flipkartButton.setSelected(true); // Mark as selected
-                groceryButton.setSelected(false); // Deselect other button
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment;
+
+            if (item.getItemId() == R.id.nav_ai_assist) {
+                selectedFragment = new AiAssistFragment();
+            } else if (item.getItemId() == R.id.nav_doctor) {
+                selectedFragment = new DoctorsFragment();
+            } else {
+                return false;
             }
-        });
 
-        groceryButton.setOnClickListener(v -> {
-            if (!currentFragmentTag.equals(DOCTORS_FRAGMENT_TAG)) {
-                loadFragment(new DoctorsFragment(), DOCTORS_FRAGMENT_TAG);
-                groceryButton.setSelected(true); // Mark as selected
-                flipkartButton.setSelected(false); // Deselect other button
-            }
-        });
-    }
-
-
-
-
-    private void loadFragment(Fragment fragment, String tag) {
-        Fragment existingFragment = getSupportFragmentManager().findFragmentByTag(tag);
-        if (existingFragment == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .replace(R.id.fragment_container, fragment, tag)
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, selectedFragment)
                     .commit();
-        }
+            return true;
+        });
 
-        // Update current fragment tag
-        currentFragmentTag = tag;
+        // Set default selection
+        bottomNavigationView.setSelectedItemId(R.id.nav_ai_assist);
+        setStatusBarColor(R.color.blue);
 
-        // Update UI dynamically based on fragment
-        if (tag.equals(AI_ASSIST_FRAGMENT_TAG)) {
-            updateStatusBarColor(R.color.colorPrimary);
-        } else if (tag.equals(DOCTORS_FRAGMENT_TAG)) {
-            updateStatusBarColor(R.color.colorSecondary);
-        }
+        handleFragmentNavigation(getIntent());
+
     }
 
     private void requestPermissions() {
-        String[] permissions = {
+        String[] permissions = new String[] {
                 Manifest.permission.WAKE_LOCK,
                 Manifest.permission.VIBRATE,
                 Manifest.permission.RECEIVE_BOOT_COMPLETED,
-                Manifest.permission.MODIFY_AUDIO_SETTINGS
+                Manifest.permission.MODIFY_AUDIO_SETTINGS // Add this permission
         };
 
+
+
+        // For Android 13 and later
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions = Arrays.copyOf(permissions, permissions.length + 1);
             permissions[permissions.length - 1] = Manifest.permission.POST_NOTIFICATIONS;
         }
 
-        // Check if permissions are already granted
-        if (!hasAllPermissionsGranted(permissions)) {
-            ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION_CODE);
-        } else {
-            showToast("All permissions are already granted.");
-        }
-    }
-
-    private boolean hasAllPermissionsGranted(String[] permissions) {
+        boolean isPermissionGranted = true;
         for (String permission : permissions) {
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
+                isPermissionGranted = false;
+                break;
             }
         }
-        return true;
+
+        // Request permissions only if they are not already granted
+        if (!isPermissionGranted) {
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION_CODE);
+        }
     }
 
-    private void showToast(String message) {
-        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleFragmentNavigation(intent);
     }
+
+    private void handleFragmentNavigation(Intent intent) {
+        if (intent != null) {
+            String fragmentToOpen = intent.getStringExtra("openFragment");
+            if ("home".equals(fragmentToOpen)) {
+                // Replace the fragment with the Home fragment
+                openHomeFragment();
+            }
+        }
+    }
+
+    private void openHomeFragment() {
+        Fragment homeFragment = new AiAssistFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, homeFragment) // R.id.fragment_container should be the FrameLayout or container for fragments in MainActivity's layout
+                .commit();
+    }
+
+    private void setStatusBarColor(@ColorRes int colorRes) {
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getResources().getColor(colorRes, getTheme()));
+    }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSION_CODE) {
-            if (allPermissionsGranted(grantResults)) {
-                showToast("Permissions granted!");
-            } else {
-                showToast("Permissions denied. Some features may not work.");
-            }
-        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    private boolean allPermissionsGranted(int[] grantResults) {
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                return false;
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, you can now display notifications and schedule exact alarms
+                // Set up the reminder alarm and notification code here
+                // ...
+            } else {
+                // Permission denied, you cannot display notifications and schedule exact alarms
+                // Handle the permission denial here
+                // ...
             }
         }
-        return true;
     }
 
-    // Save the current fragment tag for state restoration
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("currentFragmentTag", currentFragmentTag);
-    }
-
-    // Dynamically update the status bar color
-    private void updateStatusBarColor(@ColorRes int colorRes) {
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(ContextCompat.getColor(this, colorRes));
-    }
 }

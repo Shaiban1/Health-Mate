@@ -1,7 +1,6 @@
 package com.example.healthmate.fragment;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -22,7 +21,6 @@ import com.example.healthmate.interfaces.OnBookAppointmentListener;
 import com.example.healthmate.models.Doctor;
 import com.google.android.material.chip.ChipGroup;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +29,12 @@ public class DoctorsFragment extends Fragment implements OnBookAppointmentListen
     private RecyclerView doctorsRecyclerView;
     private DoctorsAdapter doctorsAdapter;
     private List<Doctor> doctorList;
-    private List<Doctor> filteredDoctorList;
     private EditText searchBar;
     private ImageView filterButton;
     private ChipGroup chipGroupSpecialization;
     private boolean isFilterVisible = false;
-
+    private String currentSearchQuery = "";
+    private String selectedSpecialization = ""; // To track selected specialization
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,13 +47,10 @@ public class DoctorsFragment extends Fragment implements OnBookAppointmentListen
         doctorList.add(new Doctor("Dr. Ashok Seth", "Orthopedist", R.drawable.doct4));
         doctorList.add(new Doctor("Dr. Nandkishore Kapadia", "Pediatrician", R.drawable.doct5));
         doctorList.add(new Doctor("Dr. B.K. Misra", "Breast Surgery", R.drawable.doct6));
-        doctorList.add(new Doctor("Dr. Subhash Gupta", " Interventional Cardiology", R.drawable.doct7));
-        doctorList.add(new Doctor("Dr. Shashank Joshi", " Neurosurgery", R.drawable.doct8));
+        doctorList.add(new Doctor("Dr. Subhash Gupta", "Interventional Cardiology", R.drawable.doct7));
+        doctorList.add(new Doctor("Dr. Shashank Joshi", "Neurosurgery", R.drawable.doct8));
         doctorList.add(new Doctor("Dr. Suresh H. Advani", "Orthopedist", R.drawable.doct9));
         doctorList.add(new Doctor("Dr. Ashok Rajgopal", "Endocrinology", R.drawable.doct10));
-
-
-        filteredDoctorList = new ArrayList<>(doctorList);
     }
 
     @Nullable
@@ -84,40 +79,49 @@ public class DoctorsFragment extends Fragment implements OnBookAppointmentListen
         // Set up chip filtering
         setupFilterChips();
 
-
-
         return view;
     }
-
 
     private void setupSearchBar() {
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterDoctors(s.toString());
+                currentSearchQuery = s.toString();
+                filterDoctors(); // Filter based on the current search query and selected chip
             }
 
             @Override
-            public void afterTextChanged(Editable s) { }
+            public void afterTextChanged(Editable s) {}
         });
     }
 
-    private void filterDoctors(String query) {
+    private void filterDoctors() {
         List<Doctor> filteredList = new ArrayList<>();
         for (Doctor doctor : doctorList) {
-            if (doctor.getName().toLowerCase().contains(query.toLowerCase()) ||
-                    doctor.getSpecialization().toLowerCase().contains(query.toLowerCase())) {
+            boolean matchesSearch = doctor.getName().toLowerCase().contains(currentSearchQuery.toLowerCase()) ||
+                    doctor.getSpecialization().toLowerCase().contains(currentSearchQuery.toLowerCase());
+            boolean matchesSpecialization = selectedSpecialization.isEmpty();
+
+            if (!selectedSpecialization.isEmpty()) {
+                String[] specializations = selectedSpecialization.split(",");
+                for (String specialization : specializations) {
+                    if (doctor.getSpecialization().equalsIgnoreCase(specialization.trim())) {
+                        matchesSpecialization = true;
+                        break;
+                    }
+                }
+            }
+
+            if (matchesSearch && matchesSpecialization) {
                 filteredList.add(doctor);
             }
         }
         // Update the adapter with the filtered list
         doctorsAdapter.updateDoctorList(filteredList);
     }
-
-
 
     // Toggle filter chip visibility
     private void setupFilterButton() {
@@ -128,32 +132,28 @@ public class DoctorsFragment extends Fragment implements OnBookAppointmentListen
     }
 
     // Set up specialization chip click listeners to filter the list
+    // Set up specialization chip click listeners to filter the list
     private void setupFilterChips() {
         chipGroupSpecialization.setOnCheckedChangeListener((group, checkedId) -> {
-            String filter = "";
-            if (checkedId == R.id.chip_cardiologist) {
-                filter = "Cardiologist";
-            } else if (checkedId == R.id.chip_dermatologist) {
-                filter = "Dermatologist";
-            } else if (checkedId == R.id.chip_neurologist) {
-                filter = "Neurologist";
+            selectedSpecialization = ""; // Reset selected specialization
+            for (int id : chipGroupSpecialization.getCheckedChipIds()) {
+                if (id == R.id.chip_cardiologist) {
+                    selectedSpecialization += "Cardiologist,";
+                } else if (id == R.id.chip_dermatologist) {
+                    selectedSpecialization += "Dermatologist,";
+                } else if (id == R.id.chip_neurologist) {
+                    selectedSpecialization += "Neurologist,";
+                }
+                // Add more chip IDs as needed
             }
-            applyChipFilter(filter);
+            // Remove the trailing comma
+            if (!selectedSpecialization.isEmpty()) {
+                selectedSpecialization = selectedSpecialization.substring(0, selectedSpecialization.length() - 1);
+            }
+
+            filterDoctors(); // Reapply filtering with the current search query and selected specialization
         });
     }
-
-    private void applyChipFilter(String specialization) {
-        List<Doctor> filteredList = new ArrayList<>();
-        for (Doctor doctor : doctorList) {
-            if (doctor.getSpecialization().equalsIgnoreCase(specialization)) {
-                filteredList.add(doctor);
-            }
-        }
-        // Update the adapter with the filtered list
-        doctorsAdapter.updateDoctorList(filteredList);
-    }
-
-
 
     @Override
     public void onBookAppointment(Doctor doctor) {
@@ -161,6 +161,4 @@ public class DoctorsFragment extends Fragment implements OnBookAppointmentListen
         BookAppointmentFragment bookAppointmentFragment = BookAppointmentFragment.newInstance(doctor);
         bookAppointmentFragment.show(getParentFragmentManager(), "bookAppointment");
     }
-
-
 }

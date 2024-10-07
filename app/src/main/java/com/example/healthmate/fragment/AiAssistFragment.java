@@ -31,6 +31,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -94,6 +95,10 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
     private int currentSlideIndex = 0;
     private final int SLIDER_DELAY = 3000; // 3 seconds delay for auto slide
     private Handler sliderHandler;
+    private TextView usernameTextView;
+    private CircularImageView profileImageView;
+    private DatabaseReference userSurveyRef;
+    private ProgressBar loadingProgress;
 
     private int[] sliderImages = {R.drawable.doct1, R.drawable.dcot2, R.drawable.doct3, R.drawable.doct4};
 
@@ -110,18 +115,14 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
         chatSuggestionText = view.findViewById(R.id.chat_suggestion_text);
         chatActionButton = view.findViewById(R.id.chat_action_button);
         animationView = view.findViewById(R.id.id_anim_meta);
+        loadingProgress = view.findViewById(R.id.loading_progress);
 
         animationView.setAnimation(R.raw.metaanim);
         animationView.playAnimation();
 
 
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
-            loadUserData(userId);  // Fetch and display user data (username and profile picture)
-        } else {
-            redirectToLogin();
-        }
+        usernameTextView = view.findViewById(R.id.username_main);
+        profileImageView = view.findViewById(R.id.profile_image);
 
         // List of AI suggestions
         suggestions = new ArrayList<>();
@@ -190,31 +191,7 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
         });
 
 
-        TextView usernameTextView = view.findViewById(R.id.username_main);
 
-        // Fetch user details from Firebase
-        FirebaseUser curruser = FirebaseAuth.getInstance().getCurrentUser();
-        if (curruser != null) {
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    String username = dataSnapshot.child("name").getValue(String.class);
-
-                    // Safely set the username or show a placeholder if null
-                    usernameTextView.setText(username != null ? username : "Unknown");
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    // Handle errors here (e.g., log the error)
-                    usernameTextView.setText("Error loading username");
-                }
-            });
-        } else {
-            // Handle the case where the user is not logged in
-            usernameTextView.setText("Guest");
-        }
 
 
         viewPager = view.findViewById(R.id.viewPager);
@@ -235,8 +212,64 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
         startAutoSlide();
 
 
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
 
+        if (user != null) {
+            // Reference to user's survey data
+            loadingProgress.setVisibility(View.VISIBLE);
+            userSurveyRef = FirebaseDatabase.getInstance().getReference()
+                    .child("users").child(user.getUid()).child("survey");
+
+            // Fetch user survey data
+            fetchUserSurveyData();
+        }
         return view;
+    }
+
+
+    private void fetchUserSurveyData() {
+        userSurveyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Retrieve survey data
+                    String username = dataSnapshot.child("name").getValue(String.class);
+                    String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue(String.class);
+
+                    // Set username
+                    if (username != null) {
+                        usernameTextView.setText(username);
+                    }
+
+                    // Load profile picture using Glide
+                    if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                        Glide.with(requireContext())
+                                .load(Uri.parse(profileImageUrl))  // Use Uri.parse to convert the string to URI
+                                .placeholder(R.drawable.user)  // Placeholder image
+                                .into(profileImageView);
+                    } else {
+                        profileImageView.setImageResource(R.drawable.user);
+                    }
+
+                    // Hide the loading indicator once data is loaded
+                    loadingProgress.setVisibility(View.GONE);
+                } else {
+                    // Set default profile image and hide progress bar
+                    profileImageView.setImageResource(R.drawable.user);
+                    loadingProgress.setVisibility(View.GONE);
+                    Log.e("AiAssistFragment", "Survey data not found for this user.");
+                }
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                loadingProgress.setVisibility(View.GONE);
+                Log.e("AiAssistFragment", "Error fetching survey data: " + databaseError.getMessage());
+            }
+        });
     }
 
     private void startAutoSlide() {
@@ -421,7 +454,6 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
 
 
     private void loadUserData(String userId) {
-        // Initialize Firebase Auth
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -430,82 +462,94 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
             return;
         }
 
-        SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
-        String savedUsername = prefs.getString("username", ""); // Load from SharedPreferences
-        String savedProfileImageUrl = prefs.getString("profileImageUrl", "");
+        boolean isGoogleSignIn = false;
 
-        // Immediately display stored username and profile if available
-        if (!savedUsername.isEmpty() && !savedProfileImageUrl.isEmpty()) {
-            user_name_txtVw.setText(savedUsername);
-            Glide.with(this)
-                    .load(savedProfileImageUrl)
-                    .placeholder(R.drawable.user)
-                    .circleCrop()
-                    .into(circularImageView);
+        // Check if the user signed in with Google
+        for (com.google.firebase.auth.UserInfo profile : user.getProviderData()) {
+            if (profile.getProviderId().equals("google.com")) {
+                isGoogleSignIn = true;
+                break;
+            }
         }
 
-        // Fetch the latest data from Firebase
-        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
-        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String username = dataSnapshot.child("name").getValue(String.class);
-                    String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue(String.class);
+        if (isGoogleSignIn) {
+            // User signed in with Google, so get Google profile information
+            String displayName = user.getDisplayName();
+            Uri profileImageUrl = user.getPhotoUrl();
 
-                    if (username != null && !username.isEmpty()) {
-                        user_name_txtVw.setText(username);
+            if (displayName != null) {
+                user_name_txtVw.setText("Hey, " + displayName);
+            } else {
+                user_name_txtVw.setText("Hey, User");
+            }
+
+            if (profileImageUrl != null) {
+                // Load profile image using Glide
+                Glide.with(AiAssistFragment.this)
+                        .load(profileImageUrl)
+                        .placeholder(R.drawable.user)  // Optional placeholder
+                        .into(circularImageView);
+            } else {
+                circularImageView.setImageResource(R.drawable.user);  // Default user image
+            }
+        } else {
+            // User signed in through registration and survey, load data from Firebase
+            DatabaseReference surveyReference = FirebaseDatabase.getInstance().getReference("surveys");
+
+            surveyReference.orderByChild("userId").equalTo(userId).limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        for (DataSnapshot surveySnapshot : snapshot.getChildren()) {
+                            // Get the full name from the survey node
+                            String fullName = surveySnapshot.child("name").getValue(String.class);
+                            if (fullName != null) {
+                                user_name_txtVw.setText("Hey, " + fullName);
+                            } else {
+                                user_name_txtVw.setText("Hey, User");
+                            }
+                        }
                     } else {
-                        user_name_txtVw.setText("User");
+                        Log.e("FirebaseError", "Survey data not found");
+                        user_name_txtVw.setText("Hey, User");
                     }
-
-                    // Load profile picture
-                    if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
-                        Glide.with(AiAssistFragment.this)
-                                .load(profileImageUrl)
-                                .placeholder(R.drawable.user)
-                                .circleCrop()
-                                .into(circularImageView);
-                    } else {
-                        circularImageView.setImageResource(R.drawable.user); // Default image
-                    }
-
-                    // Save updated values to SharedPreferences
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("username", username);
-                    editor.putString("profileImageUrl", profileImageUrl);
-                    editor.apply();
-                } else {
-                    // No data exists, fall back to default
-                    setDefaultUserData();
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "Error fetching user data: " + databaseError.getMessage());
-                setDefaultUserData();
-            }
-        });
-    }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("FirebaseError", "Error fetching survey data", error.toException());
+                }
+            });
 
-    private void setDefaultUserData() {
-        user_name_txtVw.setText("User not found");
-        circularImageView.setImageResource(R.drawable.user); // Default image
-    }
+            // Reference to users node for the profile image URL
+            DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
 
-    private void updateUserUI(User user) {
-        String username = user.getName();
-        String profileImageUrl = user.getProfileImageUrl();
+            // Listen for changes in user profile image URL
+            userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        // Get profile image URL
+                        String profileImageUrl = snapshot.child("profileImageUrl").getValue(String.class);
 
-        user_name_txtVw.setText(username != null && !username.isEmpty() ? username : "User");
+                        // Load profile image into CircularImageView using Glide
+                        if (profileImageUrl != null) {
+                            Glide.with(AiAssistFragment.this)
+                                    .load(profileImageUrl)
+                                    .placeholder(R.drawable.user)  // Optional placeholder
+                                    .into(circularImageView);
+                        } else {
+                            circularImageView.setImageResource(R.drawable.user);  // Default user image
+                        }
+                    }
+                }
 
-        Glide.with(this)
-                .load(profileImageUrl)
-                .placeholder(R.drawable.user) // Placeholder image
-                .error(R.drawable.user) // Error image
-                .circleCrop() // Crop image into a circular shape
-                .into(circularImageView);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("FirebaseError", "Error fetching user data", error.toException());
+                }
+            });
+        }
     }
 
 
@@ -518,7 +562,7 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
     private void redirectToLogin() {
         SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("isLoggedIn", false);
+        editor.putBoolean("isLoggedIn", true);
         editor.apply();
 
         Intent intent = new Intent(requireActivity(), LoginActivity.class);
