@@ -100,7 +100,7 @@ public class AiAssistFragment extends Fragment implements TimeDifferenceCallback
     private DatabaseReference userSurveyRef;
     private ProgressBar loadingProgress;
 
-    private int[] sliderImages = {R.drawable.doct1, R.drawable.dcot2, R.drawable.doct3, R.drawable.doct4};
+    private int[] sliderImages = {R.drawable.image1s, R.drawable.image2s, R.drawable.image3s, R.drawable.doct4};
 
 
     @Override
